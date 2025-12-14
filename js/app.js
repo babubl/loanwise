@@ -43,6 +43,8 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
   const principal = Number(document.getElementById("principal").value);
   const rate = Number(document.getElementById("rate").value);
   const tenure = Number(document.getElementById("tenure").value);
+  const prepayment = Number(document.getElementById("prepayment").value || 0);
+
 
   if (!principal || !rate || !tenure) {
     alert("Please enter all values");
@@ -55,8 +57,10 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
     tenure
   );
 
-  const totalPayment = emi * months;
-  const totalInterest = totalPayment - principal;
+  const actualMonths = schedule.length;
+const totalPayment = emi * actualMonths + prepayment;
+const totalInterest = totalPayment - principal;
+
 
   document.getElementById("emi").innerText = formatCurrency(emi);
   document.getElementById("totalInterest").innerText =
@@ -65,11 +69,13 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
     formatCurrency(totalPayment);
 
   const schedule = generateAmortization(
-    principal,
-    emi,
-    monthlyRate,
-    months
-  );
+  principal,
+  emi,
+  monthlyRate,
+  months,
+  prepayment
+);
+
 
   const tbody = document.getElementById("amortizationBody");
 
