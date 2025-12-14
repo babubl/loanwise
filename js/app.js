@@ -1,18 +1,51 @@
-// -------------------------------
-// Utility Functions
-// -------------------------------
+/*************************************************
+ * INDIAN NUMBER FORMATTERS
+ *************************************************/
 
-function formatCurrency(value) {
-  return "₹ " + Math.round(value).toLocaleString("en-IN");
+function formatIndianNumber(num) {
+  return num.toLocaleString("en-IN");
 }
 
-// -------------------------------
-// Core Loan Calculations
-// -------------------------------
+function numberToIndianWords(num) {
+  if (!num || num === 0) return "";
 
-function calculateEMI(principal, annualRate, years) {
+  const crore = Math.floor(num / 10000000);
+  const lakh = Math.floor((num % 10000000) / 100000);
+  const thousand = Math.floor((num % 100000) / 1000);
+
+  let parts = [];
+
+  if (crore > 0) parts.push(crore + " crore");
+  if (lakh > 0) parts.push(lakh + " lakh");
+  if (thousand > 0) parts.push(thousand + " thousand");
+
+  return parts.join(" ");
+}
+
+function updateHelper(inputId, helperId) {
+  const value = Number(document.getElementById(inputId).value || 0);
+  const helper = document.getElementById(helperId);
+
+  if (!helper) return;
+
+  if (value > 0) {
+    helper.innerText =
+      "₹ " +
+      formatIndianNumber(value) +
+      (numberToIndianWords(value)
+        ? " · " + numberToIndianWords(value)
+        : "");
+  } else {
+    helper.innerText = "";
+  }
+}
+
+/*************************************************
+ * EMI & AMORTIZATION LOGIC
+ *************************************************/
+
+function calculateEMI(principal, annualRate, months) {
   const monthlyRate = annualRate / 12 / 100;
-  const months = years * 12;
 
   const emi =
     (principal *
@@ -20,7 +53,7 @@ function calculateEMI(principal, annualRate, years) {
       Math.pow(1 + monthlyRate, months)) /
     (Math.pow(1 + monthlyRate, months) - 1);
 
-  return { emi, monthlyRate, months };
+  return { emi, monthlyRate };
 }
 
 function generateAmortization(
@@ -40,16 +73,14 @@ function generateAmortization(
     const interest = balance * monthlyRate;
 
     let principalPaid = emi - interest + extraMonthly;
-    if (principalPaid > balance) {
-      principalPaid = balance;
-    }
+    if (principalPaid > balance) principalPaid = balance;
 
     balance -= principalPaid;
 
     schedule.push({
       month,
       emi: emi + extraMonthly,
-      principalPaid,
+      principal: principalPaid,
       interest,
       balance: balance > 0 ? balance : 0
     });
@@ -58,42 +89,51 @@ function generateAmortization(
   return schedule;
 }
 
-// -------------------------------
-// Main Event Handler
-// -------------------------------
+function formatCurrency(val) {
+  return "₹ " + formatIndianNumber(Math.round(val));
+}
+
+/*************************************************
+ * MAIN CALCULATION HANDLER
+ *************************************************/
 
 document.getElementById("calculateBtn").addEventListener("click", function () {
   const principal = Number(document.getElementById("principal").value);
   const rate = Number(document.getElementById("rate").value);
-  const tenureYears = Number(document.getElementById("tenure").value);
+  const tenureValue = Number(document.getElementById("tenureValue").value);
+  const tenureUnit = document.getElementById("tenureUnit").value;
+
   const lumpSum = Number(document.getElementById("prepayment").value || 0);
   const extraMonthly = Number(
     document.getElementById("extraMonthly").value || 0
   );
 
-  if (!principal || !rate || !tenureYears) {
+  if (!principal || !rate || !tenureValue) {
     alert("Please enter valid loan details");
     return;
   }
 
-  const { emi, monthlyRate, months } = calculateEMI(
+  const totalMonths =
+    tenureUnit === "years" ? tenureValue * 12 : tenureValue;
+
+  const { emi, monthlyRate } = calculateEMI(
     principal,
     rate,
-    tenureYears
+    totalMonths
   );
 
   const schedule = generateAmortization(
     principal,
     emi,
     monthlyRate,
-    months,
+    totalMonths,
     lumpSum,
     extraMonthly
   );
 
-  // -------------------------------
-  // Summary Calculations
-  // -------------------------------
+  /*************************************************
+   * SUMMARY
+   *************************************************/
 
   const totalPayment =
     schedule.reduce((sum, row) => sum + row.emi, 0) + lumpSum;
@@ -102,41 +142,65 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
 
   const actualMonths = schedule.length;
   const years = Math.floor(actualMonths / 12);
-  const remainingMonths = actualMonths % 12;
-
-  // -------------------------------
-  // Update Summary UI
-  // -------------------------------
+  const months = actualMonths % 12;
 
   document.getElementById("emi").innerText = formatCurrency(emi);
-
   document.getElementById("totalInterest").innerText =
     formatCurrency(totalInterest);
-
   document.getElementById("totalPayment").innerText =
     formatCurrency(totalPayment);
-
   document.getElementById("loanDuration").innerText =
-    years + " years " + remainingMonths + " months";
+    years + " years " + months + " months";
 
-  // -------------------------------
-  // Render Amortization Table
-  // -------------------------------
+  /*************************************************
+   * AMORTIZATION TABLE
+   *************************************************/
 
   const tbody = document.getElementById("amortizationBody");
   tbody.innerHTML = "";
 
   schedule.forEach(row => {
     const tr = document.createElement("tr");
-
     tr.innerHTML = `
       <td>${row.month}</td>
       <td>${formatCurrency(row.emi)}</td>
-      <td>${formatCurrency(row.principalPaid)}</td>
+      <td>${formatCurrency(row.principal)}</td>
       <td>${formatCurrency(row.interest)}</td>
       <td>${formatCurrency(row.balance)}</td>
     `;
-
     tbody.appendChild(tr);
   });
 });
+
+/*************************************************
+ * INPUT HELPERS (LIVE FEEDBACK)
+ *************************************************/
+
+["principal", "prepayment", "extraMonthly"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => {
+    updateHelper(id, id + "Help");
+  });
+});
+
+/*************************************************
+ * AMORTIZATION TOGGLE
+ *************************************************/
+
+document
+  .getElementById("toggleAmortization")
+  .addEventListener("click", function () {
+    const container = document.getElementById("amortizationContainer");
+    container.classList.toggle("hidden");
+
+    this.innerText = container.classList.contains("hidden")
+      ? "View amortization schedule"
+      : "Hide amortization schedule";
+  });
+
+/*************************************************
+ * INITIAL HELPER RENDER
+ *************************************************/
+
+updateHelper("principal", "principalHelp");
+updateHelper("prepayment", "prepaymentHelp");
+updateHelper("extraMonthly", "extraMonthlyHelp");
