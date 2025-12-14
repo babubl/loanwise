@@ -1,9 +1,19 @@
-/*************************************************
- * INDIAN NUMBER FORMATTERS
- *************************************************/
+/* =========================================================
+   Loanwise – Final JS Engine (v3)
+   Indian-first • UX-safe • Finance-correct
+   ========================================================= */
 
-function formatIndianNumber(num) {
-  return num.toLocaleString("en-IN");
+/* ------------------------------
+   Indian Number Utilities
+------------------------------ */
+
+function stripNonDigits(value) {
+  return value.replace(/[^\d]/g, "");
+}
+
+function formatIndianNumber(value) {
+  if (!value) return "";
+  return Number(value).toLocaleString("en-IN");
 }
 
 function numberToIndianWords(num) {
@@ -14,35 +24,59 @@ function numberToIndianWords(num) {
   const thousand = Math.floor((num % 100000) / 1000);
 
   let parts = [];
-
-  if (crore > 0) parts.push(crore + " crore");
-  if (lakh > 0) parts.push(lakh + " lakh");
-  if (thousand > 0) parts.push(thousand + " thousand");
+  if (crore) parts.push(crore + " crore");
+  if (lakh) parts.push(lakh + " lakh");
+  if (thousand) parts.push(thousand + " thousand");
 
   return parts.join(" ");
 }
 
-function updateHelper(inputId, helperId) {
-  const value = Number(document.getElementById(inputId).value || 0);
-  const helper = document.getElementById(helperId);
+function updateHelperText(inputEl, helperEl) {
+  const raw = stripNonDigits(inputEl.value);
+  const num = Number(raw);
 
-  if (!helper) return;
-
-  if (value > 0) {
-    helper.innerText =
-      "₹ " +
-      formatIndianNumber(value) +
-      (numberToIndianWords(value)
-        ? " · " + numberToIndianWords(value)
-        : "");
-  } else {
-    helper.innerText = "";
+  if (!num) {
+    helperEl.innerText = "";
+    return;
   }
+
+  const words = numberToIndianWords(num);
+  helperEl.innerText =
+    "₹ " + formatIndianNumber(num) + (words ? " · " + words : "");
 }
 
-/*************************************************
- * EMI & AMORTIZATION LOGIC
- *************************************************/
+/* ------------------------------
+   Input Formatting (UX-safe)
+------------------------------ */
+
+function attachIndianFormatter(inputId, helperId) {
+  const input = document.getElementById(inputId);
+  const helper = document.getElementById(helperId);
+
+  if (!input || !helper) return;
+
+  input.addEventListener("input", () => {
+    const cursorPos = input.selectionStart;
+    const raw = stripNonDigits(input.value);
+    if (!raw) {
+      input.value = "";
+      helper.innerText = "";
+      return;
+    }
+
+    const formatted = formatIndianNumber(raw);
+    input.value = formatted;
+
+    updateHelperText(input, helper);
+
+    // cursor safety (simple but effective)
+    input.setSelectionRange(formatted.length, formatted.length);
+  });
+}
+
+/* ------------------------------
+   EMI & Loan Math
+------------------------------ */
 
 function calculateEMI(principal, annualRate, months) {
   const monthlyRate = annualRate / 12 / 100;
@@ -69,7 +103,7 @@ function generateAmortization(
 
   const schedule = [];
 
-  for (let month = 1; month <= maxMonths && balance > 0; month++) {
+  for (let m = 1; m <= maxMonths && balance > 0; m++) {
     const interest = balance * monthlyRate;
 
     let principalPaid = emi - interest + extraMonthly;
@@ -78,7 +112,7 @@ function generateAmortization(
     balance -= principalPaid;
 
     schedule.push({
-      month,
+      month: m,
       emi: emi + extraMonthly,
       principal: principalPaid,
       interest,
@@ -90,26 +124,30 @@ function generateAmortization(
 }
 
 function formatCurrency(val) {
-  return "₹ " + formatIndianNumber(Math.round(val));
+  return "₹ " + Math.round(val).toLocaleString("en-IN");
 }
 
-/*************************************************
- * MAIN CALCULATION HANDLER
- *************************************************/
+/* ------------------------------
+   Main Calculate Handler
+------------------------------ */
 
-document.getElementById("calculateBtn").addEventListener("click", function () {
-  const principal = Number(document.getElementById("principal").value);
+document.getElementById("calculateBtn").addEventListener("click", () => {
+  const principal = Number(
+    stripNonDigits(document.getElementById("principal").value)
+  );
   const rate = Number(document.getElementById("rate").value);
   const tenureValue = Number(document.getElementById("tenureValue").value);
   const tenureUnit = document.getElementById("tenureUnit").value;
 
-  const lumpSum = Number(document.getElementById("prepayment").value || 0);
+  const lumpSum = Number(
+    stripNonDigits(document.getElementById("prepayment").value)
+  );
   const extraMonthly = Number(
-    document.getElementById("extraMonthly").value || 0
+    stripNonDigits(document.getElementById("extraMonthly").value)
   );
 
   if (!principal || !rate || !tenureValue) {
-    alert("Please enter valid loan details");
+    alert("Please enter valid loan details.");
     return;
   }
 
@@ -131,9 +169,7 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
     extraMonthly
   );
 
-  /*************************************************
-   * SUMMARY
-   *************************************************/
+  /* -------- Summary -------- */
 
   const totalPayment =
     schedule.reduce((sum, row) => sum + row.emi, 0) + lumpSum;
@@ -152,9 +188,7 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
   document.getElementById("loanDuration").innerText =
     years + " years " + months + " months";
 
-  /*************************************************
-   * AMORTIZATION TABLE
-   *************************************************/
+  /* -------- Amortization Table -------- */
 
   const tbody = document.getElementById("amortizationBody");
   tbody.innerHTML = "";
@@ -172,19 +206,9 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
   });
 });
 
-/*************************************************
- * INPUT HELPERS (LIVE FEEDBACK)
- *************************************************/
-
-["principal", "prepayment", "extraMonthly"].forEach(id => {
-  document.getElementById(id).addEventListener("input", () => {
-    updateHelper(id, id + "Help");
-  });
-});
-
-/*************************************************
- * AMORTIZATION TOGGLE
- *************************************************/
+/* ------------------------------
+   Amortization Toggle
+------------------------------ */
 
 document
   .getElementById("toggleAmortization")
@@ -193,14 +217,14 @@ document
     container.classList.toggle("hidden");
 
     this.innerText = container.classList.contains("hidden")
-      ? "View amortization schedule"
+      ? "View detailed amortization schedule"
       : "Hide amortization schedule";
   });
 
-/*************************************************
- * INITIAL HELPER RENDER
- *************************************************/
+/* ------------------------------
+   Init
+------------------------------ */
 
-updateHelper("principal", "principalHelp");
-updateHelper("prepayment", "prepaymentHelp");
-updateHelper("extraMonthly", "extraMonthlyHelp");
+attachIndianFormatter("principal", "principalHelp");
+attachIndianFormatter("prepayment", "prepaymentHelp");
+attachIndianFormatter("extraMonthly", "extraMonthlyHelp");
