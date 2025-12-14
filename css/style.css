@@ -1,12 +1,6 @@
-/* ===========================================================
-   LOANWISE — Financial Decision Cockpit
-   Inspired by FreedomNumber reference
-   Dense • Serious • Metric-first • Bank-grade
-   =========================================================== */
-
-/* =========================
-   DESIGN TOKENS
-========================= */
+/* ===========================
+   LOANWISE – FINANCIAL COCKPIT
+   =========================== */
 
 :root {
   --bg: #0b132b;
@@ -16,51 +10,30 @@
   --muted: #aab4d4;
   --line: #253163;
 
-  --brand: #ff6a00;        /* saffron */
-  --positive: #16a34a;     /* green */
-  --critical: #ef4444;     /* red */
-  --focus: #3b82f6;
+  --brand: #ff6a00;
+  --positive: #16a34a;
+  --critical: #ef4444;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-
-  --space-2xs: 4px;
-  --space-xs: 6px;
-  --space-sm: 10px;
-  --space-md: 14px;
-  --space-lg: 20px;
-  --space-xl: 28px;
-
-  --font-body: "Inter","Segoe UI",system-ui,sans-serif;
-  --font-mono: ui-monospace,SFMono-Regular,Menlo,Consolas;
+  --radius: 10px;
+  --font: "Inter", system-ui, sans-serif;
 }
 
-/* =========================
-   BASE
-========================= */
+* { box-sizing: border-box; }
 
-* {
-  box-sizing: border-box;
-}
-
-html, body {
+body {
   margin: 0;
+  font-family: var(--font);
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
 }
 
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: var(--space-md);
+  padding: 16px;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* ---------- Header ---------- */
 
 .header {
   background: var(--surface);
@@ -68,101 +41,95 @@ html, body {
 }
 
 .header-inner {
-  min-height: 64px;
   display: flex;
   align-items: center;
+  min-height: 64px;
 }
 
 .logo {
+  margin: 0;
   font-size: 20px;
   font-weight: 800;
-  margin: 0;
 }
 
 .tagline {
   font-size: 12px;
   color: var(--muted);
-  margin-top: 2px;
 }
 
-/* =========================
-   HERO (COMPACT)
-========================= */
+/* ---------- Hero ---------- */
 
 .hero {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  margin: var(--space-md) 0;
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
 }
 
 .hero h2 {
+  margin: 0 0 4px;
   font-size: 18px;
-  font-weight: 800;
-  margin: 0 0 var(--space-2xs);
 }
 
 .hero p {
+  margin: 0;
   font-size: 13px;
   color: var(--muted);
-  margin: 0;
-  max-width: 900px;
 }
 
-/* =========================
-   MAIN GRID
-========================= */
+/* ---------- Layout ---------- */
 
 .main-grid {
   display: grid;
-  gap: var(--space-lg);
+  gap: 16px;
 }
 
 @media (min-width: 960px) {
   .main-grid {
     grid-template-columns: 1.15fr 0.85fr;
-    align-items: start;
   }
 }
 
-/* =========================
-   CARD SYSTEM
-========================= */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- Cards ---------- */
 
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
+  border-radius: var(--radius);
+  padding: 14px;
 }
 
 .card h3 {
+  margin: 0 0 10px;
   font-size: 14px;
   font-weight: 700;
-  margin: 0 0 var(--space-sm);
 }
 
-/* =========================
-   FORM GRID (DENSE)
-========================= */
+.card.results {
+  border-left: 4px solid var(--brand);
+}
+
+/* ---------- Forms ---------- */
 
 .form-grid {
   display: grid;
-  gap: var(--space-sm);
+  gap: 10px;
 }
 
 .form-grid.two {
   grid-template-columns: 1fr 1fr;
 }
 
-.form-grid.three {
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
 label {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 
@@ -172,76 +139,42 @@ select {
   background: #0b183f;
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   padding: 6px 8px;
-  font-size: 13px;
+  margin-top: 2px;
 }
 
-input:focus,
-select:focus {
-  outline: 2px solid var(--focus);
-  border-color: transparent;
+input[type="range"] {
+  padding: 0;
 }
 
 .helper {
   font-size: 11px;
   color: var(--muted);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-/* =========================
-   PRIMARY ACTION
-========================= */
+/* ---------- Button ---------- */
 
 .primary-btn {
   width: 100%;
-  margin-top: var(--space-sm);
+  margin-top: 12px;
   padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid #e55f00;
-  background: var(--brand);
-  color: #10131f;
   font-weight: 800;
+  border-radius: var(--radius);
+  background: var(--brand);
+  border: none;
   cursor: pointer;
 }
 
-.primary-btn:hover {
-  filter: brightness(1.05);
-}
-
-.primary-btn:focus {
-  outline: 2px solid var(--focus);
-}
-
-/* =========================
-   RIGHT PANEL
-========================= */
-
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-/* =========================
-   DECISION SUMMARY (FLASHY)
-========================= */
-
-.card.results {
-  border-left: 4px solid var(--brand);
-  background: linear-gradient(180deg, #162250 0%, #111d4a 100%);
-}
+/* ---------- Results ---------- */
 
 .result-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: var(--space-xs) 0;
+  padding: 6px 0;
   border-bottom: 1px solid var(--line);
-}
-
-.result-row:last-child {
-  border-bottom: none;
 }
 
 .result-row span {
@@ -250,25 +183,21 @@ select:focus {
 }
 
 .result-row strong {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.2px;
 }
 
-/* Narrative / Advisor insight */
 .insight {
-  margin-top: var(--space-sm);
-  padding: var(--space-sm);
-  border: 1px dashed var(--line);
-  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  padding: 8px;
   background: #0b183f;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
   font-size: 13px;
   line-height: 1.45;
 }
 
-/* =========================
-   YES / NO DECISIONS
-========================= */
+/* ---------- YES / NO ---------- */
 
 .decision-yes {
   color: var(--positive);
@@ -280,38 +209,20 @@ select:focus {
   font-weight: 800;
 }
 
-/* =========================
-   OPTIONAL SECTIONS
-========================= */
-
-.optional {
-  opacity: 0.9;
-}
-
-.optional h3::after {
-  content: " (optional)";
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--muted);
-}
-
-/* =========================
-   TABS (AMORTIZATION)
-========================= */
+/* ---------- Tabs ---------- */
 
 .tabs {
   display: flex;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-xs);
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .tab {
   padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 999px;
   border: 1px solid var(--line);
-  background: #0b183f;
+  border-radius: 999px;
   cursor: pointer;
+  font-size: 12px;
 }
 
 .tab.active {
@@ -320,73 +231,34 @@ select:focus {
   font-weight: 700;
 }
 
-/* =========================
-   TABLES
-========================= */
+.hidden {
+  display: none;
+}
+
+/* ---------- Tables ---------- */
 
 table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
   font-size: 12px;
+  border-collapse: collapse;
 }
 
-thead th {
-  background: #12275e;
-  padding: 8px;
-  text-align: left;
+th, td {
+  padding: 6px;
   border-bottom: 1px solid var(--line);
 }
 
-tbody td {
-  padding: 8px;
-  border-top: 1px solid var(--line);
+th {
+  text-align: left;
+  background: #12275e;
 }
 
-tbody tr:hover {
-  background: rgba(255,255,255,0.04);
-}
-
-td:last-child,
-th:last-child {
-  text-align: right;
-}
-
-/* =========================
-   ADVISOR PANEL
-========================= */
-
-.advisor {
-  background: #0b183f;
-  border-left: 3px solid var(--brand);
-}
-
-.advisor p {
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 6px 0;
-}
-
-/* =========================
-   FOOTER
-========================= */
+/* ---------- Footer ---------- */
 
 .footer {
-  margin-top: var(--space-lg);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--line);
+  margin-top: 24px;
   font-size: 11px;
   color: var(--muted);
   text-align: center;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 720px) {
-  .form-grid.two,
-  .form-grid.three {
-    grid-template-columns: 1fr;
-  }
+  padding-bottom: 16px;
 }
