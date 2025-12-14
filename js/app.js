@@ -11,11 +11,13 @@ function calculateEMI(principal, annualRate, years) {
   return { emi, monthlyRate, months };
 }
 
-function generateAmortization(principal, emi, monthlyRate, months) {
-  let balance = principal;
+function generateAmortization(principal, emi, monthlyRate, months, prepayment) {
+  let balance = principal - prepayment;
+  if (balance < 0) balance = 0;
+
   const schedule = [];
 
-  for (let month = 1; month <= months; month++) {
+  for (let month = 1; month <= months && balance > 0; month++) {
     const interest = balance * monthlyRate;
     const principalPaid = emi - interest;
     balance -= principalPaid;
@@ -31,6 +33,7 @@ function generateAmortization(principal, emi, monthlyRate, months) {
 
   return schedule;
 }
+
 
 function formatCurrency(value) {
   return "₹ " + Math.round(value).toLocaleString("en-IN");
