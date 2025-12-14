@@ -1,5 +1,5 @@
 /* =========================================================
-   LOANWISE — BANK-GRADE DECISION COCKPIT UI
+   LOANWISE — BANK-GRADE DECISION COCKPIT UI (FINAL)
    ========================================================= */
 
 :root {
@@ -19,7 +19,7 @@
   --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ================= Reset ================= */
+/* ================= Base ================= */
 
 * {
   box-sizing: border-box;
@@ -33,13 +33,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ================= Layout ================= */
-
 .container {
   max-width: 1200px;
   margin: auto;
   padding: 16px;
 }
+
+/* ================= Layout ================= */
 
 .main-grid {
   display: grid;
@@ -48,7 +48,7 @@ body {
 
 @media (min-width: 960px) {
   .main-grid {
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: 1.15fr 0.85fr;
     align-items: start;
   }
 }
@@ -89,20 +89,20 @@ body {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px 16px;
+  padding: 12px 16px;
   margin-bottom: 14px;
 }
 
 .hero h2 {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .hero p {
   margin: 0;
   font-size: 13px;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* ================= Cards ================= */
@@ -125,6 +125,7 @@ body {
 
 .card.results {
   border-left: 4px solid var(--brand);
+  background: linear-gradient(180deg, #1b2e70, #162250);
 }
 
 /* ================= Forms ================= */
@@ -166,14 +167,6 @@ input[type="range"] {
   margin-top: 8px;
 }
 
-/* ================= Helpers ================= */
-
-.helper {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
 /* ================= Buttons ================= */
 
 .primary-btn {
@@ -186,10 +179,6 @@ input[type="range"] {
   color: #111;
   font-weight: 800;
   cursor: pointer;
-}
-
-.primary-btn:hover {
-  filter: brightness(1.05);
 }
 
 .secondary-btn {
@@ -240,6 +229,12 @@ input[type="range"] {
   line-height: 1.45;
 }
 
+/* Rent optimizer emphasis */
+#rentVerdict {
+  border-left: 4px solid var(--positive);
+  background: #0d2a1a;
+}
+
 /* ================= YES / NO ================= */
 
 .decision-yes {
@@ -252,7 +247,7 @@ input[type="range"] {
   font-weight: 900;
 }
 
-/* ================= Slider polish ================= */
+/* ================= Slider ================= */
 
 input[type="range"] {
   -webkit-appearance: none;
@@ -293,6 +288,14 @@ td {
 th {
   text-align: left;
   background: #12275e;
+}
+
+/* ================= Helpers ================= */
+
+.helper {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
 }
 
 /* ================= Utility ================= */
