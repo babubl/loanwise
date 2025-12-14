@@ -1,10 +1,10 @@
 /* =========================================================
-   LOANWISE — FINAL DECISION ENGINE (FRONTEND ONLY)
+   LOANWISE — FINAL STABLE JS (CTA-SAFE, AMORTIZATION FIXED)
    ========================================================= */
 
 const $ = (id) => document.getElementById(id);
 
-/* ---------------- Utilities ---------------- */
+/* ================= Utilities ================= */
 
 const num = (v) =>
   Number(String(v || "").replace(/[^\d.]/g, "")) || 0;
@@ -12,7 +12,7 @@ const num = (v) =>
 const inr = (v) =>
   "₹ " + Math.round(v).toLocaleString("en-IN");
 
-/* Indian currency formatter with helper text */
+/* Attach INR formatter */
 function attachFormatter(input, helper) {
   if (!input || !helper) return;
   input.addEventListener("input", () => {
@@ -22,7 +22,7 @@ function attachFormatter(input, helper) {
   });
 }
 
-/* ---------------- Finance Core ---------------- */
+/* ================= Finance Core ================= */
 
 function calculateEMI(P, annualRate, months) {
   if (annualRate === 0) return P / months;
@@ -31,9 +31,8 @@ function calculateEMI(P, annualRate, months) {
          (Math.pow(1 + r, months) - 1);
 }
 
-function amortize(P, annualRate, emi, months) {
+function amortizeMonthly(P, annualRate, emi, months) {
   let balance = P;
-  let totalInterest = 0;
   const rows = [];
   const r = annualRate / 1200;
 
@@ -41,52 +40,99 @@ function amortize(P, annualRate, emi, months) {
     const interest = annualRate ? balance * r : 0;
     const principal = Math.min(emi - interest, balance);
     balance -= principal;
-    totalInterest += interest;
 
     rows.push({
-      year: Math.ceil(m / 12),
+      month: m,
+      emi,
       interest,
       principal,
       balance
     });
   }
-
-  return { rows, totalInterest, months: rows.length };
+  return rows;
 }
 
-/* ---------------- Main Loan Analysis ---------------- */
+/* ================= Main Analysis ================= */
 
 function analyzeLoan() {
   const P = num($("principal").value);
   const rate = num($("rate").value);
-  const tenureValue = num($("tenureValue").value);
+  const tenureVal = num($("tenureValue").value);
   const tenureMonths =
-    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
+    tenureVal * ($("tenureUnit").value === "years" ? 12 : 1);
 
   if (!P || !rate || !tenureMonths) return;
 
-  const emi = calculateEMI(P, rate, tenureMonths);
-  const base = amortize(P, rate, emi, tenureMonths);
+  /* RESET outputs */
+  $("amortizationBody").innerHTML = "";
+  $("amortizationMonthly").innerHTML = "";
 
+  const emi = calculateEMI(P, rate, tenureMonths);
+  const monthlyRows = amortizeMonthly(P, rate, emi, tenureMonths);
+
+  /* Decision summary */
   $("emi").textContent = inr(emi);
   $("optEmi").textContent = inr(emi);
   $("interestSaved").textContent = inr(0);
   $("loanDuration").textContent =
-    `${Math.floor(base.months / 12)}y ${base.months % 12}m`;
+    `${Math.floor(monthlyRows.length / 12)}y ${monthlyRows.length % 12}m`;
 
   $("verdict").textContent =
-    "This reflects your current loan position without any optimization.";
+    "This reflects your current loan without optimization.";
 
   $("decisionSummary").classList.remove("hidden");
 
-  updateRateSensitivity(base, P, rate, tenureMonths);
-  renderAmortization(base.rows);
+  renderYearly(monthlyRows);
+  renderMonthly(monthlyRows);
+
+  updateRateSensitivity(P, rate, tenureMonths, emi);
   loadInterestRates();
 }
 
-/* ---------------- Interest Rate Sensitivity ---------------- */
+/* ================= Amortization ================= */
 
-function updateRateSensitivity(base, P, rate, months) {
+function renderYearly(rows) {
+  const yearly = {};
+
+  rows.forEach((r) => {
+    const y = Math.ceil(r.month / 12);
+    if (!yearly[y]) yearly[y] = { i: 0, p: 0, b: r.balance };
+    yearly[y].i += r.interest;
+    yearly[y].p += r.principal;
+    yearly[y].b = r.balance;
+  });
+
+  $("amortizationBody").innerHTML = Object.entries(yearly)
+    .map(
+      ([y, v]) => `
+      <tr>
+        <td>${y}</td>
+        <td>${inr(v.i)}</td>
+        <td>${inr(v.p)}</td>
+        <td>${inr(v.b)}</td>
+      </tr>`
+    )
+    .join("");
+}
+
+function renderMonthly(rows) {
+  $("amortizationMonthly").innerHTML = rows
+    .map(
+      (r) => `
+      <tr>
+        <td>${r.month}</td>
+        <td>${inr(r.emi)}</td>
+        <td>${inr(r.interest)}</td>
+        <td>${inr(r.principal)}</td>
+        <td>${inr(r.balance)}</td>
+      </tr>`
+    )
+    .join("");
+}
+
+/* ================= Interest Sensitivity ================= */
+
+function updateRateSensitivity(P, rate, months, baseEmi) {
   const shock = Number($("rateShock").value || 0);
   $("rateShockValue").textContent =
     `${shock > 0 ? "+" : ""}${shock.toFixed(2)}%`;
@@ -102,132 +148,94 @@ function updateRateSensitivity(base, P, rate, months) {
     return;
   }
 
-  const shocked = amortize(
-    P,
-    newRate,
-    calculateEMI(P, newRate, months),
-    months
-  );
+  const newEmi = calculateEMI(P, newRate, months);
+  const newRows = amortizeMonthly(P, newRate, newEmi, months);
+  const baseRows = amortizeMonthly(P, rate, baseEmi, months);
+
+  const sumInterest = (rows) =>
+    rows.reduce((a, r) => a + r.interest, 0);
 
   $("riskImpact").textContent =
-    inr(shocked.totalInterest - base.totalInterest);
+    inr(sumInterest(newRows) - sumInterest(baseRows));
 }
 
-/* ---------------- Amortization (Year-wise) ---------------- */
-
-function renderAmortization(rows) {
-  const yearly = {};
-
-  rows.forEach((r) => {
-    if (!yearly[r.year]) {
-      yearly[r.year] = { i: 0, p: 0, b: r.balance };
-    }
-    yearly[r.year].i += r.interest;
-    yearly[r.year].p += r.principal;
-    yearly[r.year].b = r.balance;
-  });
-
-  $("amortizationBody").innerHTML = Object.keys(yearly)
-    .map((y) => `
-      <tr>
-        <td>${y}</td>
-        <td>${inr(yearly[y].i)}</td>
-        <td>${inr(yearly[y].p)}</td>
-        <td>${inr(yearly[y].b)}</td>
-      </tr>
-    `)
-    .join("");
-}
-
-/* ---------------- Rent vs EMI Optimizer ---------------- */
+/* ================= Rent vs EMI ================= */
 
 function analyzeRentOptimizer() {
   const P = num($("principal").value);
   const rate = num($("rate").value);
   const rent = num($("monthlyRent").value);
-  const tenureValue = num($("tenureValue").value);
-  const tenureMonths =
-    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
+  const tenureVal = num($("tenureValue").value);
+  const months =
+    tenureVal * ($("tenureUnit").value === "years" ? 12 : 1);
 
-  if (!P || !rate || !rent || !tenureMonths) {
+  if (!P || !rate || !rent || !months) {
     $("rentVerdict").textContent =
-      "Please enter loan details and monthly rent.";
+      "Please enter loan details and rent.";
     return;
   }
 
-  const baseEmi = calculateEMI(P, rate, tenureMonths);
+  const emi = calculateEMI(P, rate, months);
 
-  if (baseEmi <= rent) {
+  if (emi <= rent) {
     $("rentVerdict").textContent =
-      "Your current EMI is already fully covered by rent. No action required.";
+      "Your rent already fully covers the EMI.";
     return;
   }
 
-  /* Strategy: monthly extra payment until EMI gap is neutral */
-  const requiredExtra = baseEmi - rent;
-
-  const accelerated = amortize(
-    P,
-    rate,
-    baseEmi + requiredExtra,
-    tenureMonths
-  );
+  const extra = emi - rent;
+  const accelerated = amortizeMonthly(P, rate, emi + extra, months);
 
   const yearsSaved =
-    Math.floor((tenureMonths - accelerated.months) / 12);
+    Math.floor((months - accelerated.length) / 12);
 
   $("rentVerdict").textContent =
-    `By paying approximately ${inr(requiredExtra)} extra per month,
-     your rent fully covers EMI and your loan closes about
-     ${yearsSaved} years earlier.`;
+    `Paying ${inr(extra)} extra per month makes EMI rent-neutral and
+     closes the loan about ${yearsSaved} years earlier.`;
 }
 
-/* ---------------- Bank Switching ---------------- */
+/* ================= Bank Switching ================= */
 
 function analyzeSwitching() {
   const P = num($("principal").value);
   const rate = num($("rate").value);
   const newRate = num($("newRate").value);
   const switchCost = num($("switchCost").value);
-  const tenureValue = num($("tenureValue").value);
-  const tenureMonths =
-    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
+  const tenureVal = num($("tenureValue").value);
+  const months =
+    tenureVal * ($("tenureUnit").value === "years" ? 12 : 1);
 
-  if (!P || !rate || !newRate || !tenureMonths) return;
+  if (!P || !rate || !newRate || !months) return;
 
-  const current = amortize(
-    P,
-    rate,
-    calculateEMI(P, rate, tenureMonths),
-    tenureMonths
+  const currRows = amortizeMonthly(
+    P, rate, calculateEMI(P, rate, months), months
+  );
+  const newRows = amortizeMonthly(
+    P, newRate, calculateEMI(P, newRate, months), months
   );
 
-  const switched = amortize(
-    P,
-    newRate,
-    calculateEMI(P, newRate, tenureMonths),
-    tenureMonths
-  );
+  const sumInterest = (r) =>
+    r.reduce((a, x) => a + x.interest, 0);
 
-  const netSaving =
-    current.totalInterest - switched.totalInterest - switchCost;
+  const net =
+    sumInterest(currRows) - sumInterest(newRows) - switchCost;
 
-  if (netSaving > 0) {
+  if (net > 0) {
     $("switchDecision").textContent = "YES";
     $("switchDecision").className = "decision-yes";
     $("switchVerdict").textContent =
-      `Switching saves approximately ${inr(netSaving)} even after costs.`;
+      `Switching saves about ${inr(net)} even after costs.`;
   } else {
     $("switchDecision").textContent = "NO";
     $("switchDecision").className = "decision-no";
     $("switchVerdict").textContent =
-      "Switching does not recover the switching cost within the remaining tenure.";
+      "Switching does not provide net savings.";
   }
 }
 
-/* ---------------- Interest Rate Table ---------------- */
+/* ================= Interest Rate Table ================= */
 
-function getLoanSlabId(amount) {
+function slabId(amount) {
   if (amount <= 3000000) return "upto30";
   if (amount <= 7500000) return "between30to75";
   return "above75";
@@ -236,54 +244,54 @@ function getLoanSlabId(amount) {
 function loadInterestRates() {
   if (!window.HOME_LOAN_RATES) return;
 
-  const principal = num($("principal").value);
-  const slabId = getLoanSlabId(principal || 0);
-
+  const p = num($("principal").value);
+  const slab = slabId(p || 0);
   let html = "";
 
-  HOME_LOAN_RATES.lenders.forEach((group) => {
-    html += `
-      <tr>
-        <td colspan="3" style="font-weight:700;padding-top:10px;">
-          ${group.category}
-        </td>
-      </tr>
-    `;
-
-    group.banks.forEach((bank) => {
+  HOME_LOAN_RATES.lenders.forEach((g) => {
+    html += `<tr><td colspan="3"><strong>${g.category}</strong></td></tr>`;
+    g.banks.forEach((b) => {
       html += `
         <tr>
-          <td>${bank.name}</td>
-          <td>${bank.rates[slabId] || "—"}</td>
-          <td>${bank.processingFee || "—"}</td>
-        </tr>
-      `;
+          <td>${b.name}</td>
+          <td>${b.rates[slab] || "—"}</td>
+          <td>${b.processingFee || "—"}</td>
+        </tr>`;
     });
   });
 
   $("interestRateTable").innerHTML = html;
-  $("ratesAsOf").textContent = HOME_LOAN_RATES.asOf || "—";
+  $("ratesAsOf").textContent = HOME_LOAN_RATES.asOf;
 }
 
-/* ---------------- Events & Init ---------------- */
+/* ================= Tabs ================= */
+
+document.querySelectorAll(".tab").forEach((t) => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+
+    $("amortization-yearly").classList.toggle("hidden", t.dataset.view !== "yearly");
+    $("amortization-monthly").classList.toggle("hidden", t.dataset.view !== "monthly");
+  });
+});
+
+/* ================= Events ================= */
 
 $("calculateBtn").addEventListener("click", analyzeLoan);
-$("rateShock").addEventListener("input", () => {
-  if (!$("decisionSummary").classList.contains("hidden")) analyzeLoan();
-});
-
-$("toggleSwitching").addEventListener("click", () => {
-  $("switchingPanel").classList.toggle("hidden");
-});
-
-$("toggleRentOptimizer").addEventListener("click", () => {
-  $("rentOptimizerPanel").classList.toggle("hidden");
-});
-
-$("analyzeSwitching").addEventListener("click", analyzeSwitching);
+$("rateShock").addEventListener("input", analyzeLoan);
 $("analyzeRent").addEventListener("click", analyzeRentOptimizer);
+$("analyzeSwitching").addEventListener("click", analyzeSwitching);
 
-/* Currency formatters */
+$("toggleSwitching").addEventListener("click", () =>
+  $("switchingPanel").classList.toggle("hidden")
+);
+$("toggleRentOptimizer").addEventListener("click", () =>
+  $("rentOptimizerPanel").classList.toggle("hidden")
+);
+
+/* ================= Formatters ================= */
+
 attachFormatter($("principal"), $("principalHelp"));
 attachFormatter($("prepayment"), $("prepaymentHelp"));
 attachFormatter($("extraMonthly"), $("extraMonthlyHelp"));
