@@ -8,14 +8,32 @@ function calculateEMI(principal, annualRate, years) {
       Math.pow(1 + monthlyRate, months)) /
     (Math.pow(1 + monthlyRate, months) - 1);
 
-  const totalPayment = emi * months;
-  const totalInterest = totalPayment - principal;
+  return { emi, monthlyRate, months };
+}
 
-  return {
-    emi,
-    totalPayment,
-    totalInterest
-  };
+function generateAmortization(principal, emi, monthlyRate, months) {
+  let balance = principal;
+  const schedule = [];
+
+  for (let month = 1; month <= months; month++) {
+    const interest = balance * monthlyRate;
+    const principalPaid = emi - interest;
+    balance -= principalPaid;
+
+    schedule.push({
+      month,
+      emi,
+      principalPaid,
+      interest,
+      balance: balance > 0 ? balance : 0
+    });
+  }
+
+  return schedule;
+}
+
+function formatCurrency(value) {
+  return "₹ " + Math.round(value).toLocaleString("en-IN");
 }
 
 document.getElementById("calculateBtn").addEventListener("click", function () {
@@ -28,14 +46,42 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
     return;
   }
 
-  const result = calculateEMI(principal, rate, tenure);
+  const { emi, monthlyRate, months } = calculateEMI(
+    principal,
+    rate,
+    tenure
+  );
 
-  document.getElementById("emi").innerText =
-    "₹ " + result.emi.toFixed(0).toLocaleString();
+  const totalPayment = emi * months;
+  const totalInterest = totalPayment - principal;
 
+  document.getElementById("emi").innerText = formatCurrency(emi);
   document.getElementById("totalInterest").innerText =
-    "₹ " + result.totalInterest.toFixed(0).toLocaleString();
-
+    formatCurrency(totalInterest);
   document.getElementById("totalPayment").innerText =
-    "₹ " + result.totalPayment.toFixed(0).toLocaleString();
+    formatCurrency(totalPayment);
+
+  const schedule = generateAmortization(
+    principal,
+    emi,
+    monthlyRate,
+    months
+  );
+
+  const tbody = document.querySelector("#amortizationTable tbody");
+  tbody.innerHTML = "";
+
+  schedule.forEach(row => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${row.month}</td>
+      <td>${formatCurrency(row.emi)}</td>
+      <td>${formatCurrency(row.principalPaid)}</td>
+      <td>${formatCurrency(row.interest)}</td>
+      <td>${formatCurrency(row.balance)}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
 });
