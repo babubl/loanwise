@@ -4,7 +4,7 @@
 
 const $ = (id) => document.getElementById(id);
 
-/* ----------------- Utilities ----------------- */
+/* ---------------- Utilities ---------------- */
 
 const num = (v) =>
   Number(String(v || "").replace(/[^\d.]/g, "")) || 0;
@@ -12,7 +12,7 @@ const num = (v) =>
 const inr = (v) =>
   "₹ " + Math.round(v).toLocaleString("en-IN");
 
-/* Indian number formatting + helper text */
+/* Indian currency formatter with helper text */
 function attachFormatter(input, helper) {
   if (!input || !helper) return;
   input.addEventListener("input", () => {
@@ -22,7 +22,7 @@ function attachFormatter(input, helper) {
   });
 }
 
-/* ----------------- Finance Core ----------------- */
+/* ---------------- Finance Core ---------------- */
 
 function calculateEMI(P, annualRate, months) {
   if (annualRate === 0) return P / months;
@@ -54,7 +54,7 @@ function amortize(P, annualRate, emi, months) {
   return { rows, totalInterest, months: rows.length };
 }
 
-/* ----------------- Main Loan Analysis ----------------- */
+/* ---------------- Main Loan Analysis ---------------- */
 
 function analyzeLoan() {
   const P = num($("principal").value);
@@ -77,20 +77,14 @@ function analyzeLoan() {
   $("verdict").textContent =
     "This reflects your current loan position without any optimization.";
 
-  /* Reveal decision summary */
   $("decisionSummary").classList.remove("hidden");
 
-  /* ---------- Interest Sensitivity ---------- */
   updateRateSensitivity(base, P, rate, tenureMonths);
-
-  /* ---------- Amortization (Year-wise) ---------- */
   renderAmortization(base.rows);
-
-  /* ---------- Interest rates table refresh ---------- */
   loadInterestRates();
 }
 
-/* ----------------- Interest Rate Sensitivity ----------------- */
+/* ---------------- Interest Rate Sensitivity ---------------- */
 
 function updateRateSensitivity(base, P, rate, months) {
   const shock = Number($("rateShock").value || 0);
@@ -119,7 +113,7 @@ function updateRateSensitivity(base, P, rate, months) {
     inr(shocked.totalInterest - base.totalInterest);
 }
 
-/* ----------------- Amortization Renderer ----------------- */
+/* ---------------- Amortization (Year-wise) ---------------- */
 
 function renderAmortization(rows) {
   const yearly = {};
@@ -145,7 +139,50 @@ function renderAmortization(rows) {
     .join("");
 }
 
-/* ----------------- Bank Switching ----------------- */
+/* ---------------- Rent vs EMI Optimizer ---------------- */
+
+function analyzeRentOptimizer() {
+  const P = num($("principal").value);
+  const rate = num($("rate").value);
+  const rent = num($("monthlyRent").value);
+  const tenureValue = num($("tenureValue").value);
+  const tenureMonths =
+    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
+
+  if (!P || !rate || !rent || !tenureMonths) {
+    $("rentVerdict").textContent =
+      "Please enter loan details and monthly rent.";
+    return;
+  }
+
+  const baseEmi = calculateEMI(P, rate, tenureMonths);
+
+  if (baseEmi <= rent) {
+    $("rentVerdict").textContent =
+      "Your current EMI is already fully covered by rent. No action required.";
+    return;
+  }
+
+  /* Strategy: monthly extra payment until EMI gap is neutral */
+  const requiredExtra = baseEmi - rent;
+
+  const accelerated = amortize(
+    P,
+    rate,
+    baseEmi + requiredExtra,
+    tenureMonths
+  );
+
+  const yearsSaved =
+    Math.floor((tenureMonths - accelerated.months) / 12);
+
+  $("rentVerdict").textContent =
+    `By paying approximately ${inr(requiredExtra)} extra per month,
+     your rent fully covers EMI and your loan closes about
+     ${yearsSaved} years earlier.`;
+}
+
+/* ---------------- Bank Switching ---------------- */
 
 function analyzeSwitching() {
   const P = num($("principal").value);
@@ -188,11 +225,11 @@ function analyzeSwitching() {
   }
 }
 
-/* ----------------- Interest Rate Table (Fallback Data) ----------------- */
+/* ---------------- Interest Rate Table ---------------- */
 
 function getLoanSlabId(amount) {
   if (amount <= 3000000) return "upto30";
-  if (amount <= 7500000) return "30to75";
+  if (amount <= 7500000) return "between30to75";
   return "above75";
 }
 
@@ -218,7 +255,7 @@ function loadInterestRates() {
         <tr>
           <td>${bank.name}</td>
           <td>${bank.rates[slabId] || "—"}</td>
-          <td>—</td>
+          <td>${bank.processingFee || "—"}</td>
         </tr>
       `;
     });
@@ -228,26 +265,29 @@ function loadInterestRates() {
   $("ratesAsOf").textContent = HOME_LOAN_RATES.asOf || "—";
 }
 
-/* ----------------- Init & Events ----------------- */
+/* ---------------- Events & Init ---------------- */
 
 $("calculateBtn").addEventListener("click", analyzeLoan);
 $("rateShock").addEventListener("input", () => {
-  if (!$("decisionSummary").classList.contains("hidden")) {
-    analyzeLoan();
-  }
+  if (!$("decisionSummary").classList.contains("hidden")) analyzeLoan();
 });
 
 $("toggleSwitching").addEventListener("click", () => {
   $("switchingPanel").classList.toggle("hidden");
 });
 
-$("analyzeSwitching").addEventListener("click", analyzeSwitching);
+$("toggleRentOptimizer").addEventListener("click", () => {
+  $("rentOptimizerPanel").classList.toggle("hidden");
+});
 
-/* Format currency inputs */
+$("analyzeSwitching").addEventListener("click", analyzeSwitching);
+$("analyzeRent").addEventListener("click", analyzeRentOptimizer);
+
+/* Currency formatters */
 attachFormatter($("principal"), $("principalHelp"));
 attachFormatter($("prepayment"), $("prepaymentHelp"));
 attachFormatter($("extraMonthly"), $("extraMonthlyHelp"));
 attachFormatter($("switchCost"), $("switchCostHelp"));
+attachFormatter($("monthlyRent"), $("monthlyRentHelp"));
 
-/* Initial rate table load */
 document.addEventListener("DOMContentLoaded", loadInterestRates);
