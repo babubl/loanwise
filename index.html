@@ -27,7 +27,7 @@
 <!-- ================= MAIN ================= -->
 <main class="container">
 
-  <!-- ================= HERO (COMPACT & CLEAR) ================= -->
+  <!-- ================= HERO ================= -->
   <section class="hero">
     <h2>Home Loan Decision Cockpit</h2>
     <p>
@@ -43,12 +43,11 @@
     <!-- ================= LEFT: INPUTS ================= -->
     <section>
 
-      <!-- ========== CORE LOAN DETAILS ========== -->
+      <!-- LOAN SNAPSHOT -->
       <section class="card">
         <h3>Loan Snapshot</h3>
 
         <div class="form-grid two">
-
           <div>
             <label>
               Outstanding Principal (from last statement)
@@ -80,16 +79,14 @@
               </select>
             </label>
           </div>
-
         </div>
       </section>
 
-      <!-- ========== PREPAYMENT / OPTIMIZATION ========== -->
+      <!-- PREPAYMENT -->
       <section class="card">
         <h3>Prepayment Strategy</h3>
 
         <div class="form-grid two">
-
           <div>
             <label>
               One-time Prepayment Amount
@@ -105,9 +102,9 @@
             </label>
             <div class="helper" id="extraMonthlyHelp"></div>
           </div>
-
         </div>
 
+        <!-- kept for future logic -->
         <div class="form-grid two">
           <div>
             <label>
@@ -120,17 +117,17 @@
           </div>
         </div>
       </section>
-      <!-- ========== PRIMARY ACTION ========== -->
+
       <button id="calculateBtn" class="primary-btn">
         Analyze Loan Decision
       </button>
 
-    </section> <!-- END LEFT INPUTS -->
+    </section>
 
-    <!-- ================= RIGHT: DECISION COCKPIT ================= -->
+    <!-- ================= RIGHT: OUTPUTS ================= -->
     <section class="right-panel">
 
-      <!-- ========== DECISION SUMMARY (FLASHY) ========== -->
+      <!-- DECISION SUMMARY -->
       <section class="card results">
         <h3>Decision Summary</h3>
 
@@ -154,29 +151,23 @@
           <strong id="loanDuration">—</strong>
         </div>
 
-        <!-- Advisor-style narrative -->
         <div class="insight" id="verdict">
-          Enter your loan details and click “Analyze Loan Decision”
-          to see the most effective strategy.
+          Enter your loan details and click “Analyze Loan Decision”.
         </div>
       </section>
 
-      <!-- ========== BANK SWITCHING (YES / NO) ========== -->
+      <!-- BANK SWITCHING -->
       <section class="card">
         <h3>Bank Switching Outcome</h3>
 
         <div class="result-row">
           <span>Should you switch banks?</span>
-          <strong id="switchDecision" class="decision-no">—</strong>
+          <strong id="switchDecision">—</strong>
         </div>
 
-        <div class="insight" id="switchVerdict">
-          Switching analysis will appear here once you enter an
-          alternate interest rate and switching cost.
-        </div>
+        <div class="insight" id="switchVerdict"></div>
 
-        <!-- Optional inputs inline -->
-        <div class="form-grid two optional" style="margin-top: 10px;">
+        <div class="form-grid two optional">
           <div>
             <label>
               Alternate Bank Interest Rate (%)
@@ -194,53 +185,46 @@
         </div>
       </section>
 
-      <!-- ========== INTEREST RATE SENSITIVITY (OPTIONAL) ========== -->
+      <!-- INTEREST RATE SENSITIVITY (SLIDER) -->
       <section class="card optional">
         <h3>Interest Rate Sensitivity</h3>
 
-        <p class="helper">
-          Select a possible rate increase to see how much extra
-          interest you may pay if rates rise.
-        </p>
+        <label>
+          Possible Rate Increase:
+          <strong><span id="rateShockValue">+0.50%</span></strong>
+        </label>
 
-        <div class="form-grid three" style="margin-top: 8px;">
-          <label>
-            <input type="radio" name="rateShock" value="0.25" checked />
-            +0.25%
-          </label>
+        <input
+          type="range"
+          id="rateShock"
+          min="0"
+          max="1.5"
+          step="0.25"
+          value="0.50"
+        />
 
-          <label>
-            <input type="radio" name="rateShock" value="0.50" />
-            +0.50%
-          </label>
-
-          <label>
-            <input type="radio" name="rateShock" value="1.00" />
-            +1.00%
-          </label>
+        <div class="helper">
+          Move the slider to simulate future rate hikes.
         </div>
 
-        <div class="insight" style="margin-top: 10px;">
+        <div class="insight">
           Additional interest impact:
           <strong id="riskImpact">—</strong>
         </div>
       </section>
 
-    </section> <!-- END RIGHT PANEL -->
+    </section>
+  </section>
 
-  </section> <!-- END MAIN GRID -->
-  <!-- ================= AMORTIZATION (TAB-BASED) ================= -->
+  <!-- ================= AMORTIZATION ================= -->
   <section class="card" style="margin-top: 16px;">
-
     <h3>Amortization & Loan Breakdown</h3>
 
-    <!-- Tabs -->
     <div class="tabs">
       <div class="tab active" data-tab="yearly">Year-wise</div>
       <div class="tab" data-tab="monthly">Monthly</div>
     </div>
 
-    <!-- Year-wise (default) -->
     <div id="amortization-yearly" class="amortization-panel">
       <table>
         <thead>
@@ -251,66 +235,35 @@
             <th>Closing Balance</th>
           </tr>
         </thead>
-        <tbody id="amortizationBody">
-          <!-- Filled by JS -->
-        </tbody>
+        <tbody id="amortizationBody"></tbody>
       </table>
     </div>
 
-    <!-- Monthly (hidden by default) -->
     <div id="amortization-monthly" class="amortization-panel hidden">
       <p class="helper">
-        Monthly amortization can be large. This view is useful for
-        advanced analysis.
+        Monthly amortization can be large and is intended for advanced analysis.
       </p>
-      <div id="amortizationMonthly">
-        <!-- Optional: monthly rows via JS -->
-      </div>
+      <div id="amortizationMonthly"></div>
     </div>
-
   </section>
 
-  <!-- ================= ADVISOR EDUCATION ================= -->
-  <section class="card advisor" style="margin-top: 16px;">
-    <strong>Advisor Insight</strong>
-    <p>
-      From a long-term wealth perspective, reducing high-interest
-      debt like home loans provides a guaranteed, risk-free return
-      equivalent to your loan’s interest rate.
-    </p>
-    <p>
-      Strategic prepayments made early in the loan lifecycle have
-      a disproportionate impact on total interest saved.
-      Switching banks should be considered only if the net savings
-      clearly exceed the switching costs within a short period.
-    </p>
-  </section>
-
-  <!-- ================= LIVE INTEREST RATE DATA ================= -->
+  <!-- ================= INTEREST RATES DISPLAY ================= -->
   <section class="card optional" style="margin-top: 16px;">
     <h3>Current Home Loan Interest Rates (India)</h3>
 
     <p class="helper">
-      Latest indicative rates fetched from public sources.
-      Rates may vary based on credit profile and lender.
+      Indicative rates for comparison only. Actual rates depend on credit profile.
     </p>
 
-    <!-- Filled by JS fetch -->
     <table>
       <thead>
         <tr>
-          <th>Bank / NBFC</th>
+          <th>Lender</th>
           <th>Interest Rate</th>
           <th>Processing Charges</th>
         </tr>
       </thead>
-      <tbody id="interestRateTable">
-        <tr>
-          <td colspan="3" class="helper">
-            Loading latest interest rate data…
-          </td>
-        </tr>
-      </tbody>
+      <tbody id="interestRateTable"></tbody>
     </table>
 
     <p class="helper" style="margin-top: 6px;">
@@ -324,15 +277,12 @@
 <footer class="footer">
   <p>
     Loanwise is a decision-support tool for informational purposes only.
-    Calculations are indicative and do not constitute financial advice
-    or a lending offer.
-  </p>
-  <p>
-    Always verify figures with your bank or loan statement.
+    Calculations are indicative and do not constitute financial advice.
   </p>
 </footer>
 
-<!-- ================= SCRIPT ================= -->
+<!-- ================= SCRIPTS ================= -->
+<script src="js/homeLoanRatesData.js"></script>
 <script src="js/app.js"></script>
 
 </body>
