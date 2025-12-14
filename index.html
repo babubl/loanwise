@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loanwise – Home Loan Calculator</title>
+  <title>Loanwise – Home Loan Optimizer</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- HEADER -->
   <header class="header">
     <div class="container">
       <h1 class="logo">Loanwise</h1>
@@ -15,75 +16,104 @@
     </div>
   </header>
 
+  <!-- MAIN CONTENT -->
   <main class="container">
+
+    <!-- INTRO -->
     <section class="intro">
       <h2>Home Loan Calculator</h2>
       <p>
-        Calculate EMI, view amortization schedule, and understand how
-        prepayments and interest rates affect your home loan.
+        Calculate EMI, view amortization schedule, and see how prepayments
+        and extra monthly payments can help you close your home loan faster.
       </p>
     </section>
 
+    <!-- CALCULATOR -->
     <section class="calculator">
+
       <div class="field">
-        <label>Outstanding Loan Amount (₹)</label>
+        <label for="principal">Outstanding Loan Amount (₹)</label>
         <input type="number" id="principal" value="10000000" />
       </div>
 
       <div class="field">
-  <label>Lump-Sum Prepayment (₹)</label>
-  <input type="number" id="prepayment" value="0" />
-</div>
-
-
-      <div class="field">
-        <label>Interest Rate (%)</label>
+        <label for="rate">Interest Rate (%)</label>
         <input type="number" step="0.01" id="rate" value="8.5" />
       </div>
 
       <div class="field">
-        <label>Remaining Tenure (Years)</label>
+        <label for="tenure">Remaining Tenure (Years)</label>
         <input type="number" id="tenure" value="20" />
+      </div>
+
+      <div class="field">
+        <label for="prepayment">Lump-Sum Prepayment (₹)</label>
+        <input type="number" id="prepayment" value="0" />
+      </div>
+
+      <div class="field">
+        <label for="extraMonthly">Extra Monthly Payment (₹)</label>
+        <input type="number" id="extraMonthly" value="0" />
       </div>
 
       <button id="calculateBtn">Calculate</button>
     </section>
 
+    <!-- RESULTS -->
     <section class="results">
       <h3>Loan Summary</h3>
-      <p><strong>Monthly EMI:</strong> <span id="emi">—</span></p>
-      <p><strong>Total Interest:</strong> <span id="totalInterest">—</span></p>
-      <p><strong>Total Payment:</strong> <span id="totalPayment">—</span></p>
+
+      <p>
+        <strong>Monthly EMI:</strong>
+        <span id="emi">—</span>
+      </p>
+
+      <p>
+        <strong>Total Interest:</strong>
+        <span id="totalInterest">—</span>
+      </p>
+
+      <p>
+        <strong>Total Payment:</strong>
+        <span id="totalPayment">—</span>
+      </p>
+
+      <p>
+        <strong>Loan Duration:</strong>
+        <span id="loanDuration">—</span>
+      </p>
     </section>
-    
+
+    <!-- AMORTIZATION -->
     <section class="amortization">
-  <h3>Amortization Schedule</h3>
+      <h3>Amortization Schedule</h3>
 
-  <div class="table-wrapper">
-    <table id="amortizationTable">
-      <thead>
-        <tr>
-          <th>Month</th>
-          <th>EMI</th>
-          <th>Principal</th>
-          <th>Interest</th>
-          <th>Balance</th>
-        </tr>
-      </thead>
-      <tbody id="amortizationBody">
-        <!-- Rows injected here -->
-      </tbody>
-    </table>
-  </div>
-</section>
-
+      <div class="table-wrapper">
+        <table id="amortizationTable">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>EMI</th>
+              <th>Principal</th>
+              <th>Interest</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="amortizationBody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
   </main>
 
+  <!-- FOOTER -->
   <footer class="footer">
     © 2025 Loanwise. All rights reserved.
   </footer>
 
-  <script src="js/app.js"></script>
+  <!-- SCRIPT -->
+  <script src="./js/app.js"></script>
 </body>
 </html>
