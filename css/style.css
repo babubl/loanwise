@@ -1,10 +1,10 @@
 /* ============================================================
-   LOANWISE — WORLD CLASS FINTECH UI
-   Calm • Serious • Trustworthy • Bank-grade
+   LOANWISE — FINAL PROFESSIONAL UI
+   Bank-grade • Decision-first • Calm • Hierarchical
    ============================================================ */
 
 /* =========================
-   RESET & BASE
+   BASE RESET
 ========================= */
 
 * {
@@ -20,28 +20,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
-  /* Premium layered background (NOT white, NOT dull) */
-  background:
-    radial-gradient(
-      circle at top left,
-      #eef2ff 0%,
-      #f8fafc 45%
-    ),
-    linear-gradient(
-      180deg,
-      #f1f5f9 0%,
-      #ffffff 60%
-    );
+  /* Neutral, layered background (professional, not flat) */
+  background-color: #eef0f3;
 
   color: #0f172a;
   line-height: 1.6;
-}
-
-/* Optional depth backdrop */
-.app-background {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
 }
 
 /* =========================
@@ -49,9 +32,9 @@ body {
 ========================= */
 
 .container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: auto;
-  padding: 2rem 1.5rem;
+  padding: 2.75rem 1.5rem;
 }
 
 /* =========================
@@ -59,28 +42,27 @@ body {
 ========================= */
 
 .header {
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .header-inner {
+  min-height: 72px;
   display: flex;
   align-items: center;
-  min-height: 72px;
 }
 
-.brand .logo {
+.logo {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .tagline {
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: #475569;
 }
 
 /* =========================
@@ -89,66 +71,31 @@ body {
 
 .hero {
   max-width: 760px;
-  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .hero h2 {
-  font-size: 2.1rem;
+  font-size: 2rem;
+  font-weight: 600;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.025em;
 }
 
 .hero p {
   font-size: 1.05rem;
-  color: #475569;
+  color: #334155;
 }
 
 /* =========================
-   TABS
+   STRUCTURE (NO TABS)
 ========================= */
 
 .tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-}
-
-.tab {
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid #cbd5e1;
-  background: rgba(255,255,255,0.85);
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #334155;
-  transition: all 0.15s ease;
-}
-
-.tab:hover {
-  background: #ffffff;
-}
-
-.tab.active {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
-}
-
-/* =========================
-   TAB PANELS
-========================= */
-
-.tab-panels {
-  margin-top: 2rem;
-}
-
-.tab-panel {
   display: none;
 }
 
-.tab-panel.active {
+.tab-panel {
   display: block;
+  margin-bottom: 3rem;
 }
 
 /* =========================
@@ -157,28 +104,39 @@ body {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.75rem;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3rem;
 }
 
 /* =========================
-   CARD SYSTEM
+   CARD SYSTEM (HIERARCHY)
 ========================= */
 
 .card {
   background: #ffffff;
-  border-radius: 18px;
-  padding: 2rem;
+  border-radius: 12px;
+  padding: 2.2rem;
 
-  /* Real fintech depth */
+  /* Subtle elevation */
   box-shadow:
-    0 20px 40px rgba(15, 23, 42, 0.08),
-    0 2px 6px rgba(15, 23, 42, 0.04);
+    0 6px 14px rgba(15, 23, 42, 0.06);
+}
+
+/* Decision card — dominant */
+.card.results {
+  border-left: 5px solid #1d4ed8;
+  box-shadow:
+    0 12px 26px rgba(15, 23, 42, 0.12);
+}
+
+/* Secondary cards */
+.card + .card {
+  margin-top: 2.2rem;
 }
 
 .card h3 {
   margin-top: 0;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.4rem;
   font-size: 1.25rem;
   font-weight: 600;
 }
@@ -188,14 +146,14 @@ body {
 ========================= */
 
 .field {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .field label {
   display: block;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #334155;
+  color: #1f2937;
   margin-bottom: 0.35rem;
 }
 
@@ -203,73 +161,57 @@ body {
 .field select {
   width: 100%;
   padding: 0.7rem 0.75rem;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.95rem;
+
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
 }
 
 .field input:focus,
 .field select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #1d4ed8;
 }
 
 .helper {
-  margin-top: 0.25rem;
-  font-size: 0.82rem;
-  color: #64748b;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #475569;
 }
 
-.tenure-input {
-  display: grid;
-  grid-template-columns: 1fr 130px;
-  gap: 0.75rem;
-}
+/* =========================
+   SECTION SEPARATION
+========================= */
 
 hr {
   border: none;
   border-top: 1px solid #e5e7eb;
-  margin: 1.75rem 0;
+  margin: 2.25rem 0;
 }
 
 /* =========================
-   PRIMARY BUTTON
+   PRIMARY ACTION
 ========================= */
 
 .primary-btn {
   width: 100%;
   padding: 0.9rem;
-  margin-top: 0.75rem;
+  margin-top: 1.2rem;
 
   font-size: 1rem;
   font-weight: 500;
 
-  border-radius: 14px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
 
-  background: #2563eb;
+  background: #1d4ed8;
   color: #ffffff;
-
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .primary-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
-}
-
-.primary-btn:active {
-  transform: translateY(0);
-}
-
-.privacy-note {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: #64748b;
+  background: #1e40af;
 }
 
 /* =========================
@@ -279,18 +221,17 @@ hr {
 .right-panel {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2.2rem;
 }
 
 /* =========================
-   RESULTS
+   RESULTS (FOCUS AREA)
 ========================= */
 
 .results .result-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.55rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -299,28 +240,30 @@ hr {
 }
 
 .results span {
-  color: #475569;
+  color: #334155;
 }
 
 .results strong {
   font-weight: 600;
 }
 
+/* Decision text — strong but calm */
 .insight {
-  margin-top: 1rem;
-  font-size: 0.95rem;
+  margin-top: 1.4rem;
+  font-size: 1rem;
   font-weight: 600;
+  color: #020617;
 }
 
 /* =========================
-   EDUCATION BLOCK
+   EDUCATION (INTEGRATED)
 ========================= */
 
 .education {
-  margin-top: 1.25rem;
-  padding: 1.25rem;
-  background: #f8fafc;
-  border-radius: 14px;
+  margin-top: 1.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed #cbd5e1;
+
   font-size: 0.9rem;
   color: #334155;
 }
@@ -336,28 +279,22 @@ table {
 }
 
 th, td {
-  padding: 0.7rem;
+  padding: 0.65rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
 th {
-  background: #f8fafc;
+  text-align: left;
   font-weight: 600;
-  text-align: center;
+  background: #f8fafc;
 }
 
 td {
   text-align: right;
 }
 
-td:first-child,
-th:first-child {
-  text-align: center;
-}
-
-.highlight {
-  background: #eef2ff;
-  font-weight: 600;
+td:first-child {
+  text-align: left;
 }
 
 /* =========================
@@ -365,20 +302,16 @@ th:first-child {
 ========================= */
 
 .amortization-section {
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .link-button {
   background: none;
   border: none;
   padding: 0;
-  font-size: 0.95rem;
-  color: #2563eb;
+  font-size: 0.9rem;
+  color: #1d4ed8;
   cursor: pointer;
-}
-
-.link-button:hover {
-  text-decoration: underline;
 }
 
 .hidden {
@@ -386,48 +319,15 @@ th:first-child {
 }
 
 /* =========================
-   RISK GRID
-========================= */
-
-.risk-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.25rem;
-}
-
-.risk-item {
-  padding: 1.25rem;
-  border-radius: 14px;
-  background: #f8fafc;
-}
-
-.risk-item h4 {
-  margin-top: 0;
-  font-size: 0.95rem;
-}
-
-/* =========================
-   LEARN
-========================= */
-
-.learn-block {
-  margin-bottom: 1.5rem;
-}
-
-.learn-block h4 {
-  margin-bottom: 0.3rem;
-}
-
-/* =========================
    FOOTER
 ========================= */
 
 .footer {
-  margin-top: 4rem;
-  padding: 2.5rem 1.25rem;
+  margin-top: 4.5rem;
+  padding: 2.2rem 1.25rem;
   text-align: center;
-  font-size: 0.85rem;
-  color: #64748b;
+  font-size: 0.8rem;
+  color: #475569;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -441,10 +341,6 @@ th:first-child {
   }
 
   .card {
-    padding: 1.5rem;
-  }
-
-  .tenure-input {
-    grid-template-columns: 1fr;
+    padding: 1.6rem;
   }
 }
