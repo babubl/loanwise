@@ -3,22 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loanwise – Home Loan Decision Engine</title>
+
+  <title>Loanwise — Home Loan Decision Platform</title>
 
   <meta name="description"
-    content="Loanwise helps Indian home loan borrowers decide prepayment, EMI vs tenure, bank switching, risk impact, and loan closure strategy." />
+    content="Loanwise is a consumer-grade home loan decision platform for Indian borrowers. Plan prepayments, compare scenarios, assess risk, and decide bank switching." />
 
-  <link rel="stylesheet" href="css/style.css?v=final" />
+  <!-- World-class CSS -->
+  <link rel="stylesheet" href="css/style.css?v=wc" />
 </head>
 
 <body>
 
+<!-- ================= GLOBAL BACKDROP ================= -->
+<div class="app-background"></div>
+
 <!-- ================= HEADER ================= -->
 <header class="header">
   <div class="container header-inner">
-    <div>
+    <div class="brand">
       <h1 class="logo">Loanwise</h1>
-      <p class="tagline">Make the right home loan decisions</p>
+      <p class="tagline">
+        Plan. Compare. Decide. Close your home loan smarter.
+      </p>
     </div>
   </div>
 </header>
@@ -26,192 +33,385 @@
 <!-- ================= MAIN ================= -->
 <main class="container">
 
-  <!-- INTRO -->
-  <section class="intro">
-    <h2>Home Loan Optimizer</h2>
+  <!-- ================= HERO / CONTEXT ================= -->
+  <section class="hero">
+    <h2>Home Loan Decision Platform</h2>
     <p>
-      A consumer-grade decision engine for Indian home loan borrowers.
-      Compare scenarios, reduce risk, and decide whether switching banks actually makes sense.
+      Built for Indian home loan borrowers with large loan amounts.
+      Loanwise helps you understand <strong>what to do next</strong> —
+      not just what your EMI is.
     </p>
   </section>
 
-  <!-- ================= GRID ================= -->
-  <section class="main-grid">
+  <!-- ================= TABS ================= -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="plan">Plan</button>
+    <button class="tab" data-tab="compare">Compare</button>
+    <button class="tab" data-tab="switch">Switch</button>
+    <button class="tab" data-tab="risk">Risk</button>
+    <button class="tab" data-tab="learn">Learn</button>
+  </nav>
 
-    <!-- ================= LEFT PANEL ================= -->
-    <section class="card calculator">
+  <!-- ================= TAB PANELS ================= -->
+  <section class="tab-panels">
 
-      <h3>Loan Details</h3>
+    <!-- =================================================
+         TAB 1: PLAN
+         ================================================= -->
+    <section class="tab-panel active" id="tab-plan">
 
-      <div class="field">
-        <label for="principal">Outstanding Loan Amount</label>
-        <input type="text" id="principal" inputmode="numeric" placeholder="1,00,00,000" />
-        <div class="helper" id="principalHelp"></div>
+      <div class="main-grid">
+
+        <!-- LEFT: INPUTS -->
+        <section class="card calculator">
+
+          <h3>Loan Details</h3>
+
+          <div class="field">
+            <label for="principal">Outstanding Loan Amount</label>
+            <input
+              type="text"
+              id="principal"
+              inputmode="numeric"
+              placeholder="1,00,00,000"
+            />
+            <div class="helper" id="principalHelp"></div>
+          </div>
+
+          <div class="field">
+            <label for="rate">Current Interest Rate (%)</label>
+            <input
+              type="number"
+              id="rate"
+              step="0.01"
+              placeholder="8.5"
+            />
+          </div>
+
+          <div class="field">
+            <label>Remaining Tenure</label>
+            <div class="tenure-input">
+              <input
+                type="number"
+                id="tenureValue"
+                placeholder="20"
+              />
+              <select id="tenureUnit">
+                <option value="years">Years</option>
+                <option value="months">Months</option>
+              </select>
+            </div>
+          </div>
+
+          <hr />
+
+          <h4>Optimization Strategy</h4>
+
+          <div class="field">
+            <label for="prepayment">Lump-sum Prepayment</label>
+            <input
+              type="text"
+              id="prepayment"
+              inputmode="numeric"
+              placeholder="5,00,000"
+            />
+            <div class="helper" id="prepaymentHelp"></div>
+          </div>
+
+          <div class="field">
+            <label for="extraMonthly">Extra Monthly Payment</label>
+            <input
+              type="text"
+              id="extraMonthly"
+              inputmode="numeric"
+              placeholder="10,000"
+            />
+            <div class="helper" id="extraMonthlyHelp"></div>
+          </div>
+
+          <div class="field">
+            <label for="reductionMode">When you prepay, reduce</label>
+            <select id="reductionMode">
+              <option value="tenure">
+                Loan Tenure (close faster)
+              </option>
+              <option value="emi">
+                EMI (improve cash flow)
+              </option>
+            </select>
+          </div>
+
+          <hr />
+
+          <h4>Rental Cash Flow (Optional)</h4>
+
+          <div class="field">
+            <label for="rentInput">Monthly Rent Received</label>
+            <input
+              type="text"
+              id="rentInput"
+              inputmode="numeric"
+              placeholder="25,000"
+            />
+          </div>
+
+          <button id="calculateBtn" class="primary-btn">
+            Analyze & Compare
+          </button>
+
+          <p class="privacy-note">
+            All calculations run locally in your browser.
+            No data is stored or transmitted.
+          </p>
+
+        </section>
+
+        <!-- RIGHT: SUMMARY -->
+        <section class="right-panel">
+
+          <section class="card results">
+            <h3>Your Plan Summary</h3>
+
+            <div class="result-row">
+              <span>Current EMI</span>
+              <strong id="emi">—</strong>
+            </div>
+
+            <div class="result-row">
+              <span>Optimized EMI</span>
+              <strong id="optEmi">—</strong>
+            </div>
+
+            <div class="result-row">
+              <span>Interest Saved</span>
+              <strong id="interestSaved">—</strong>
+            </div>
+
+            <div class="result-row">
+              <span>Loan Closes In</span>
+              <strong id="loanDuration">—</strong>
+            </div>
+
+            <div class="insight" id="verdict"></div>
+          </section>
+
+          <section class="education">
+            <h4>Why this matters</h4>
+            <p>
+              Home loans are front-loaded with interest.
+              Reducing principal early — even by small amounts —
+              can save several lakhs over time.
+            </p>
+          </section>
+
+        </section>
+
       </div>
+    </section>
+    <!-- =================================================
+         TAB 2: COMPARE
+         ================================================= -->
+    <section class="tab-panel" id="tab-compare">
 
-      <div class="field">
-        <label for="rate">Current Interest Rate (%)</label>
-        <input type="number" id="rate" step="0.01" placeholder="8.5" />
-      </div>
+      <section class="card">
+        <h3>Scenario Comparison</h3>
 
-      <div class="field">
-        <label>Remaining Tenure</label>
-        <div class="tenure-input">
-          <input type="number" id="tenureValue" placeholder="20" />
-          <select id="tenureUnit">
-            <option value="years">Years</option>
-            <option value="months">Months</option>
-          </select>
-        </div>
-      </div>
+        <p class="section-intro">
+          Compare your current loan plan with the optimized strategy.
+          This helps you clearly see the impact of prepayments.
+        </p>
 
-      <hr />
-
-      <!-- ================= OPTIMIZATION ================= -->
-      <h4>Optimization</h4>
-
-      <div class="field">
-        <label for="prepayment">Lump-sum Prepayment</label>
-        <input type="text" id="prepayment" inputmode="numeric" placeholder="5,00,000" />
-        <div class="helper" id="prepaymentHelp"></div>
-      </div>
-
-      <div class="field">
-        <label for="extraMonthly">Extra Monthly Payment</label>
-        <input type="text" id="extraMonthly" inputmode="numeric" placeholder="10,000" />
-        <div class="helper" id="extraMonthlyHelp"></div>
-      </div>
-
-      <div class="field">
-        <label for="reductionMode">Prepayment Strategy</label>
-        <select id="reductionMode">
-          <option value="tenure">Reduce Tenure (close faster)</option>
-          <option value="emi">Reduce EMI (improve cash flow)</option>
-        </select>
-      </div>
-
-      <hr />
-
-      <!-- ================= RENTAL CASH FLOW ================= -->
-      <h4>Rental Cash Flow (Optional)</h4>
-
-      <div class="field">
-        <label for="rentInput">Monthly Rent Received</label>
-        <input type="text" id="rentInput" inputmode="numeric" placeholder="25,000" />
-      </div>
-
-      <hr />
-
-      <!-- ================= BANK SWITCHING ================= -->
-      <h4>Bank Switching / Balance Transfer</h4>
-
-      <div class="field">
-        <label for="newRate">New Bank Interest Rate (%)</label>
-        <input type="number" id="newRate" step="0.01" placeholder="7.5" />
-      </div>
-
-      <div class="field">
-        <label for="switchCost">One-time Switching Cost</label>
-        <input type="text" id="switchCost" inputmode="numeric" placeholder="50,000" />
-        <div class="helper" id="switchCostHelp"></div>
-      </div>
-
-      <hr />
-
-      <!-- ================= STRESS TEST ================= -->
-      <h4>Interest Rate Stress Test</h4>
-
-      <div class="field">
-        <label for="rateShock">Simulate Rate Increase</label>
-        <select id="rateShock">
-          <option value="0">No change</option>
-          <option value="0.25">+0.25%</option>
-          <option value="0.5">+0.50%</option>
-          <option value="1">+1.00%</option>
-        </select>
-      </div>
-
-      <button id="calculateBtn" class="primary-btn">
-        Analyze & Compare
-      </button>
-
-      <p class="privacy-note">
-        All calculations happen locally in your browser.
-        No data is stored or transmitted.
-      </p>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Current Plan</th>
+              <th>Optimized Plan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Monthly EMI</td>
+              <td id="cmpBaseEmi">—</td>
+              <td id="cmpOptEmi">—</td>
+            </tr>
+            <tr>
+              <td>Total Interest</td>
+              <td id="cmpBaseInterest">—</td>
+              <td id="cmpOptInterest">—</td>
+            </tr>
+            <tr>
+              <td>Loan Duration</td>
+              <td id="cmpBaseDuration">—</td>
+              <td id="cmpOptDuration">—</td>
+            </tr>
+            <tr class="highlight">
+              <td>Net Benefit</td>
+              <td colspan="2" id="cmpNetBenefit">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
     </section>
 
-    <!-- ================= RIGHT PANEL ================= -->
-    <section class="right-panel">
+    <!-- =================================================
+         TAB 3: SWITCH
+         ================================================= -->
+    <section class="tab-panel" id="tab-switch">
 
-      <!-- DECISION SUMMARY -->
-      <section class="card results">
-        <h3>Decision Summary</h3>
+      <section class="card">
+        <h3>Bank Switching / Balance Transfer</h3>
 
-        <div class="result-row">
-          <span>Current EMI</span>
-          <strong id="emi">—</strong>
-        </div>
+        <p class="section-intro">
+          Lower interest rates can save money, but switching also
+          comes with costs. Loanwise evaluates whether switching
+          actually makes sense for you.
+        </p>
 
-        <div class="result-row">
-          <span>Optimized EMI</span>
-          <strong id="optEmi">—</strong>
-        </div>
+        <div class="switch-summary">
+          <div class="result-row">
+            <span>Switching Verdict</span>
+            <strong id="switchVerdict">—</strong>
+          </div>
 
-        <div class="result-row">
-          <span>Interest Saved</span>
-          <strong id="interestSaved">—</strong>
-        </div>
-
-        <div class="result-row">
-          <span>Loan Closes In</span>
-          <strong id="loanDuration">—</strong>
-        </div>
-
-        <div class="insight" id="verdict"></div>
-      </section>
-
-      <!-- BANK SWITCHING RESULT -->
-      <section class="card results">
-        <h3>Bank Switching Verdict</h3>
-        <p id="switchVerdict">—</p>
-      </section>
-
-      <!-- AMORTIZATION -->
-      <section class="amortization-section">
-        <button class="link-button" id="toggleAmortization">
-          View year-wise amortization
-        </button>
-
-        <div class="card amortization hidden" id="amortizationContainer">
-          <table>
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Interest Paid</th>
-                <th>Principal Paid</th>
-                <th>Closing Balance</th>
-              </tr>
-            </thead>
-            <tbody id="amortizationBody"></tbody>
-          </table>
+          <div class="education">
+            <p>
+              💡 Switching usually makes sense only if the interest
+              rate difference is meaningful and you stay long enough
+              to recover the switching cost.
+            </p>
+          </div>
         </div>
       </section>
 
     </section>
 
+    <!-- =================================================
+         TAB 4: RISK
+         ================================================= -->
+    <section class="tab-panel" id="tab-risk">
+
+      <section class="card">
+        <h3>Interest Rate Risk Analysis</h3>
+
+        <p class="section-intro">
+          Home loans in India usually have floating interest rates.
+          This section shows how rate increases affect your loan.
+        </p>
+
+        <div class="risk-grid">
+          <div class="risk-item">
+            <h4>+0.25% Rate Increase</h4>
+            <p id="risk025">—</p>
+          </div>
+
+          <div class="risk-item">
+            <h4>+0.50% Rate Increase</h4>
+            <p id="risk050">—</p>
+          </div>
+
+          <div class="risk-item">
+            <h4>+1.00% Rate Increase</h4>
+            <p id="risk100">—</p>
+          </div>
+        </div>
+
+        <div class="education">
+          <p>
+            💡 Prepayments reduce your exposure to future rate hikes
+            by lowering outstanding principal faster.
+          </p>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- =================================================
+         TAB 5: LEARN
+         ================================================= -->
+    <section class="tab-panel" id="tab-learn">
+
+      <section class="card">
+        <h3>Learn: How Home Loans Really Work</h3>
+
+        <div class="learn-block">
+          <h4>Why interest feels high in the early years</h4>
+          <p>
+            In the initial years of a home loan, most of your EMI
+            goes towards interest because the principal outstanding
+            is very high.
+          </p>
+        </div>
+
+        <div class="learn-block">
+          <h4>Why small prepayments matter</h4>
+          <p>
+            Even small extra payments early in the loan reduce
+            principal, which compounds into large interest savings
+            over time.
+          </p>
+        </div>
+
+        <div class="learn-block">
+          <h4>EMI reduction vs tenure reduction</h4>
+          <p>
+            Reducing tenure saves more interest overall.
+            Reducing EMI improves monthly cash flow.
+            Loanwise helps you choose based on your situation.
+          </p>
+        </div>
+
+        <div class="learn-block">
+          <h4>When bank switching helps</h4>
+          <p>
+            Switching banks helps only if the rate difference is
+            large enough and the switching cost is recovered early.
+          </p>
+        </div>
+      </section>
+
+    </section>
+
+  </section> <!-- END TAB PANELS -->
+
+  <!-- ================= AMORTIZATION ================= -->
+  <section class="amortization-section">
+    <button class="link-button" id="toggleAmortization">
+      View year-wise amortization schedule
+    </button>
+
+    <div class="card amortization hidden" id="amortizationContainer">
+      <h3>Year-wise Amortization</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Interest Paid</th>
+            <th>Principal Paid</th>
+            <th>Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody id="amortizationBody"></tbody>
+      </table>
+    </div>
   </section>
+
 </main>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
   <p>
-    Loanwise is an educational decision-support tool.
+    Loanwise is a consumer decision-support tool.
     Calculations are indicative and may differ from actual bank terms.
+  </p>
+  <p class="footer-note">
+    Built for Indian home loan borrowers.
   </p>
 </footer>
 
-<script src="js/app.js?v=final"></script>
+<!-- ================= SCRIPT ================= -->
+<script src="js/app.js?v=wc"></script>
+
 </body>
 </html>
