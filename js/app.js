@@ -1,21 +1,21 @@
 /* ============================================================
-   LOANWISE — FINAL ADVISORY ENGINE (FRONTEND ONLY)
-   World-class • Consumer-grade • Bank-demo ready
+   LOANWISE — FINAL ADVISORY JS
+   Professional • Calm • Decision-first • Frontend-only
    ============================================================ */
 
 /* =========================
    UTILITIES
 ========================= */
 
-function num(val) {
+function cleanNumber(val) {
   return Number(String(val || "").replace(/[^\d]/g, "")) || 0;
 }
 
-function fmt(n) {
+function formatINR(n) {
   return "₹ " + Math.round(n).toLocaleString("en-IN");
 }
 
-function indianWords(n) {
+function amountInWords(n) {
   if (!n) return "";
   const crore = Math.floor(n / 10000000);
   const lakh = Math.floor((n % 10000000) / 100000);
@@ -26,41 +26,42 @@ function indianWords(n) {
 }
 
 /* =========================
-   INDIAN AMOUNT INPUT UX
+   INDIAN INPUT FORMATTER
 ========================= */
 
-function attachIndianFormatter(input, helper) {
+function attachFormatter(input, helper) {
   input.addEventListener("input", () => {
-    const raw = num(input.value);
-    if (!raw) {
+    const val = cleanNumber(input.value);
+    if (!val) {
       input.value = "";
       helper.innerText = "";
       return;
     }
-    input.value = raw.toLocaleString("en-IN");
+    input.value = val.toLocaleString("en-IN");
     helper.innerText =
-      fmt(raw) + (indianWords(raw) ? " · " + indianWords(raw) : "");
+      formatINR(val) +
+      (amountInWords(val) ? " · " + amountInWords(val) : "");
   });
 }
 
 /* =========================
-   EMI & AMORTIZATION CORE
+   CORE CALCULATIONS
 ========================= */
 
-function calculateEMI(P, annualRate, months) {
-  const r = annualRate / 12 / 100;
+function calculateEMI(P, rate, months) {
+  const r = rate / 12 / 100;
   return (P * r * Math.pow(1 + r, months)) /
          (Math.pow(1 + r, months) - 1);
 }
 
-function amortize(P, rate, emi, months, extra = 0) {
+function amortization(P, rate, emi, months, extra = 0) {
   let balance = P;
-  let r = rate / 12 / 100;
   let totalInterest = 0;
-  let schedule = [];
+  const r = rate / 12 / 100;
+  const schedule = [];
 
   for (let m = 1; m <= months && balance > 0; m++) {
-    let interest = balance * r;
+    const interest = balance * r;
     let principal = emi - interest + extra;
     if (principal > balance) principal = balance;
     balance -= principal;
@@ -81,24 +82,21 @@ function amortize(P, rate, emi, months, extra = 0) {
   };
 }
 
-function yearWise(schedule) {
+function yearlySummary(schedule) {
   let years = [];
-  let interest = 0, principal = 0, year = 1;
+  let i = 0, p = 0, y = 1;
 
-  schedule.forEach((row, i) => {
-    interest += row.interest;
-    principal += row.principal;
-
-    if ((i + 1) % 12 === 0 || row.balance === 0) {
+  schedule.forEach((row, idx) => {
+    i += row.interest;
+    p += row.principal;
+    if ((idx + 1) % 12 === 0 || row.balance === 0) {
       years.push({
-        year,
-        interest,
-        principal,
+        year: y++,
+        interest: i,
+        principal: p,
         balance: row.balance
       });
-      year++;
-      interest = 0;
-      principal = 0;
+      i = 0; p = 0;
     }
   });
 
@@ -106,201 +104,152 @@ function yearWise(schedule) {
 }
 
 /* =========================
-   SCENARIOS
+   MAIN ANALYSIS
 ========================= */
 
-function baselineScenario(P, rate, months) {
-  const emi = calculateEMI(P, rate, months);
-  const result = amortize(P, rate, emi, months);
-  return { emi, ...result };
-}
+function analyzeLoan() {
 
-function optimizedScenario(
-  P, rate, months, lump, extra, mode
-) {
-  let balance = P - lump;
-  if (balance < 0) balance = 0;
+  /* ---------- BASIC INPUTS ---------- */
 
-  let emi = calculateEMI(balance, rate, months);
-  let r = rate / 12 / 100;
-  let totalInterest = 0;
-  let schedule = [];
-
-  for (let m = 1; m <= months && balance > 0; m++) {
-    let interest = balance * r;
-    let principal = emi - interest + extra;
-    if (principal > balance) principal = balance;
-    balance -= principal;
-    totalInterest += interest;
-
-    schedule.push({
-      month: m,
-      interest,
-      principal,
-      balance: Math.max(balance, 0)
-    });
-
-    if (mode === "emi" && m === 1) {
-      emi = calculateEMI(balance, rate, months - 1);
-    }
-  }
-
-  return { emi, totalInterest, months: schedule.length, schedule };
-}
-
-/* =========================
-   BANK SWITCHING
-========================= */
-
-function bankSwitch(P, r1, r2, months, cost) {
-  const base = baselineScenario(P, r1, months);
-  const alt = baselineScenario(P, r2, months);
-
-  const net = base.totalInterest - alt.totalInterest - cost;
-
-  let breakeven = null;
-  let cum = -cost;
-
-  for (let i = 0; i < base.schedule.length; i++) {
-    cum += base.schedule[i].interest - alt.schedule[i].interest;
-    if (cum > 0 && breakeven === null) {
-      breakeven = i + 1;
-      break;
-    }
-  }
-
-  return { net, breakeven };
-}
-
-/* =========================
-   STRESS TEST
-========================= */
-
-function stress(P, rate, months, shock) {
-  const r = rate + shock;
-  const emi = calculateEMI(P, r, months);
-  const res = amortize(P, r, emi, months);
-  return res.totalInterest;
-}
-
-/* =========================
-   TAB SYSTEM
-========================= */
-
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-
-    tab.classList.add("active");
-    document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
-  });
-});
-
-/* =========================
-   MAIN CONTROLLER
-========================= */
-
-function analyze() {
-  const P = num(principal.value);
-  const rateVal = Number(rate.value);
-  const months =
+  const P = cleanNumber(principal.value);
+  const rate = Number(rateInput.value || rate.value);
+  const tenureMonths =
     tenureUnit.value === "years"
       ? Number(tenureValue.value) * 12
       : Number(tenureValue.value);
 
-  if (!P || !rateVal || !months) {
+  if (!P || !rate || !tenureMonths) {
     alert("Please enter loan amount, interest rate and tenure.");
     return;
   }
 
-  const lump = num(prepayment.value);
-  const extra = num(extraMonthly.value);
-  const mode = reductionMode.value;
-  const rent = num(rentInput.value);
+  /* ---------- ADVANCED INPUTS (OPTIONAL) ---------- */
 
-  /* PLAN */
-  const base = baselineScenario(P, rateVal, months);
-  const opt = optimizedScenario(P, rateVal, months, lump, extra, mode);
+  const lumpSum = cleanNumber(prepayment.value);
+  const extraMonthly = cleanNumber(extraMonthlyInput?.value || extraMonthly.value);
+  const reductionMode = reductionModeInput?.value || reductionMode.value;
+  const rent = cleanNumber(rentInput.value);
+  const newRate = Number(newRateInput?.value || newRate.value);
+  const switchCost = cleanNumber(switchCostInput?.value || switchCost.value);
 
-  emi.innerText = fmt(base.emi);
-  optEmi.innerText = fmt(opt.emi);
-  interestSaved.innerText = fmt(base.totalInterest - opt.totalInterest);
+  /* ---------- BASE SCENARIO ---------- */
+
+  const baseEmi = calculateEMI(P, rate, tenureMonths);
+  const baseResult = amortization(P, rate, baseEmi, tenureMonths);
+
+  /* ---------- OPTIMIZED SCENARIO ---------- */
+
+  let optPrincipal = P - lumpSum;
+  if (optPrincipal < 0) optPrincipal = 0;
+
+  let optEmi = calculateEMI(optPrincipal, rate, tenureMonths);
+  let optResult = amortization(
+    optPrincipal,
+    rate,
+    optEmi,
+    tenureMonths,
+    extraMonthly
+  );
+
+  /* ---------- OUTPUT: NUMBERS ---------- */
+
+  emi.innerText = formatINR(baseEmi);
+  optEmiEl.innerText = formatINR(optEmi);
+  interestSaved.innerText =
+    formatINR(baseResult.totalInterest - optResult.totalInterest);
+
   loanDuration.innerText =
-    Math.floor(opt.months / 12) + "y " + (opt.months % 12) + "m";
+    Math.floor(optResult.months / 12) +
+    " years " +
+    (optResult.months % 12) +
+    " months";
 
-  verdict.innerText =
-    "By optimizing, you save " +
-    fmt(base.totalInterest - opt.totalInterest) +
-    " and close your loan earlier.";
+  /* ---------- DECISION SUMMARY ---------- */
+
+  let decision =
+    "Based on your inputs, prepaying " +
+    formatINR(lumpSum) +
+    " and paying an extra " +
+    formatINR(extraMonthly) +
+    " per month reduces your total interest by " +
+    formatINR(baseResult.totalInterest - optResult.totalInterest) +
+    " and closes your loan earlier.";
+
+  if (!lumpSum && !extraMonthly) {
+    decision =
+      "With no prepayments, your loan will run for the full tenure with a total interest of " +
+      formatINR(baseResult.totalInterest) +
+      ". Any early principal reduction will meaningfully reduce this.";
+  }
 
   if (rent) {
-    const gap = opt.emi - rent;
-    verdict.innerText +=
-      gap > 0
-        ? ` Rent covers ${(rent / opt.emi * 100).toFixed(0)}% of EMI.`
-        : " Rent fully covers EMI.";
+    decision +=
+      " Your rental income covers approximately " +
+      Math.round((rent / optEmi) * 100) +
+      "% of your EMI.";
   }
 
-  /* COMPARE */
-  cmpBaseEmi.innerText = fmt(base.emi);
-  cmpOptEmi.innerText = fmt(opt.emi);
-  cmpBaseInterest.innerText = fmt(base.totalInterest);
-  cmpOptInterest.innerText = fmt(opt.totalInterest);
-  cmpBaseDuration.innerText =
-    Math.floor(base.months / 12) + "y";
-  cmpOptDuration.innerText =
-    Math.floor(opt.months / 12) + "y";
+  verdict.innerText = decision;
 
-  cmpNetBenefit.innerText =
-    fmt(base.totalInterest - opt.totalInterest) + " saved";
+  /* ---------- BANK SWITCHING (ONLY IF DATA PRESENT) ---------- */
 
-  /* SWITCH */
-  const newRateVal = Number(newRate.value);
-  if (newRateVal && newRateVal < rateVal) {
-    const sw = bankSwitch(
-      P, rateVal, newRateVal, months, num(switchCost.value)
-    );
+  if (newRate && newRate < rate) {
+    const altEmi = calculateEMI(P, newRate, tenureMonths);
+    const altResult = amortization(P, newRate, altEmi, tenureMonths);
+    const netGain =
+      baseResult.totalInterest - altResult.totalInterest - switchCost;
+
     switchVerdict.innerText =
-      sw.net > 0
-        ? `Switching saves ${fmt(sw.net)}. Break-even in ${sw.breakeven} months.`
-        : "Switching is not financially beneficial.";
+      netGain > 0
+        ? "Switching to a lower rate saves approximately " +
+          formatINR(netGain) +
+          " over the loan tenure."
+        : "After considering switching costs, switching banks does not provide a financial benefit.";
   } else {
-    switchVerdict.innerText = "Switching analysis not applicable.";
+    switchVerdict.innerText =
+      "Bank switching analysis was not applied.";
   }
 
-  /* RISK */
+  /* ---------- RISK (INFORMATIONAL) ---------- */
+
   risk025.innerText =
-    "Extra interest: " +
-    fmt(stress(P, rateVal, months, 0.25) - base.totalInterest);
+    formatINR(
+      amortization(P, rate + 0.25, calculateEMI(P, rate + 0.25, tenureMonths), tenureMonths).totalInterest
+      - baseResult.totalInterest
+    ) + " additional interest";
 
   risk050.innerText =
-    "Extra interest: " +
-    fmt(stress(P, rateVal, months, 0.5) - base.totalInterest);
+    formatINR(
+      amortization(P, rate + 0.5, calculateEMI(P, rate + 0.5, tenureMonths), tenureMonths).totalInterest
+      - baseResult.totalInterest
+    ) + " additional interest";
 
   risk100.innerText =
-    "Extra interest: " +
-    fmt(stress(P, rateVal, months, 1) - base.totalInterest);
+    formatINR(
+      amortization(P, rate + 1, calculateEMI(P, rate + 1, tenureMonths), tenureMonths).totalInterest
+      - baseResult.totalInterest
+    ) + " additional interest";
 
-  /* AMORTIZATION */
+  /* ---------- AMORTIZATION ---------- */
+
   amortizationBody.innerHTML = "";
-  yearWise(opt.schedule).forEach(y => {
+  yearlySummary(optResult.schedule).forEach(y => {
     amortizationBody.innerHTML += `
       <tr>
         <td>${y.year}</td>
-        <td>${fmt(y.interest)}</td>
-        <td>${fmt(y.principal)}</td>
-        <td>${fmt(y.balance)}</td>
+        <td>${formatINR(y.interest)}</td>
+        <td>${formatINR(y.principal)}</td>
+        <td>${formatINR(y.balance)}</td>
       </tr>
     `;
   });
 }
 
 /* =========================
-   EVENT BINDINGS
+   EVENTS
 ========================= */
 
-calculateBtn.addEventListener("click", analyze);
+calculateBtn.addEventListener("click", analyzeLoan);
 
 toggleAmortization.addEventListener("click", () => {
   amortizationContainer.classList.toggle("hidden");
@@ -310,7 +259,7 @@ toggleAmortization.addEventListener("click", () => {
    INIT FORMATTERS
 ========================= */
 
-attachIndianFormatter(principal, principalHelp);
-attachIndianFormatter(prepayment, prepaymentHelp);
-attachIndianFormatter(extraMonthly, extraMonthlyHelp);
-attachIndianFormatter(switchCost, switchCostHelp);
+attachFormatter(principal, principalHelp);
+attachFormatter(prepayment, prepaymentHelp);
+attachFormatter(extraMonthly, extraMonthlyHelp);
+attachFormatter(switchCost, switchCostHelp);
