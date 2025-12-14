@@ -68,7 +68,8 @@ document.getElementById("calculateBtn").addEventListener("click", function () {
     months
   );
 
-  const tbody = document.querySelector("#amortizationTable tbody");
+  const tbody = document.getElementById("amortizationBody");
+
   tbody.innerHTML = "";
 
   schedule.forEach(row => {
