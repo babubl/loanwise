@@ -7,7 +7,7 @@
   <title>Loanwise — Home Loan Decision Cockpit</title>
 
   <meta name="description"
-        content="Loanwise is a decision-support cockpit for Indian home loan borrowers to reduce interest and close loans faster." />
+        content="Loanwise helps Indian home loan borrowers make clear, confident decisions to reduce interest and close loans faster." />
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -19,7 +19,7 @@
   <div class="container header-inner">
     <div>
       <h1 class="logo">Loanwise</h1>
-      <div class="tagline">Make one clear decision about your home loan</div>
+      <div class="tagline">One clear decision for your home loan</div>
     </div>
   </div>
 </header>
@@ -32,8 +32,8 @@
     <h2>Home Loan Decision Cockpit</h2>
     <p>
       Enter your current loan details once.
-      Loanwise shows the most effective action to reduce interest,
-      shorten tenure, or decide whether switching banks makes sense.
+      Analyze prepayment impact, interest risk, and bank switching —
+      only when you choose to.
     </p>
   </section>
 
@@ -43,7 +43,7 @@
     <!-- ================= LEFT: INPUTS ================= -->
     <section>
 
-      <!-- LOAN SNAPSHOT -->
+      <!-- LOAN SNAPSHOT (ALWAYS VISIBLE) -->
       <section class="card">
         <h3>Loan Snapshot</h3>
 
@@ -104,7 +104,6 @@
           </div>
         </div>
 
-        <!-- kept for future logic -->
         <div class="form-grid two">
           <div>
             <label>
@@ -118,8 +117,9 @@
         </div>
       </section>
 
+      <!-- PRIMARY CTA -->
       <button id="calculateBtn" class="primary-btn">
-        Analyze Loan Decision
+        Analyze My Loan
       </button>
 
     </section>
@@ -127,8 +127,8 @@
     <!-- ================= RIGHT: OUTPUTS ================= -->
     <section class="right-panel">
 
-      <!-- DECISION SUMMARY -->
-      <section class="card results">
+      <!-- DECISION SUMMARY (HIDDEN UNTIL ANALYSIS) -->
+      <section class="card results hidden" id="decisionSummary">
         <h3>Decision Summary</h3>
 
         <div class="result-row">
@@ -151,37 +151,46 @@
           <strong id="loanDuration">—</strong>
         </div>
 
-        <div class="insight" id="verdict">
-          Enter your loan details and click “Analyze Loan Decision”.
-        </div>
+        <div class="insight" id="verdict"></div>
       </section>
 
-      <!-- BANK SWITCHING -->
+      <!-- BANK SWITCHING (COLLAPSED BY DEFAULT) -->
       <section class="card">
-        <h3>Bank Switching Outcome</h3>
+        <h3>
+          Bank Switching Analysis
+          <button id="toggleSwitching" class="link-btn">Analyze</button>
+        </h3>
 
-        <div class="result-row">
-          <span>Should you switch banks?</span>
-          <strong id="switchDecision">—</strong>
-        </div>
+        <div id="switchingPanel" class="hidden">
 
-        <div class="insight" id="switchVerdict"></div>
+          <div class="form-grid two">
+            <div>
+              <label>
+                Alternate Bank Interest Rate (%)
+                <input type="number" id="newRate" step="0.01" />
+              </label>
+            </div>
 
-        <div class="form-grid two optional">
-          <div>
-            <label>
-              Alternate Bank Interest Rate (%)
-              <input type="number" id="newRate" step="0.01" />
-            </label>
+            <div>
+              <label>
+                One-time Switching Cost
+                <input type="text" id="switchCost" inputmode="numeric" />
+              </label>
+              <div class="helper" id="switchCostHelp"></div>
+            </div>
           </div>
 
-          <div>
-            <label>
-              One-time Switching Cost
-              <input type="text" id="switchCost" inputmode="numeric" />
-            </label>
-            <div class="helper" id="switchCostHelp"></div>
+          <button id="analyzeSwitching" class="secondary-btn">
+            Evaluate Switching
+          </button>
+
+          <div class="result-row">
+            <span>Should you switch?</span>
+            <strong id="switchDecision">—</strong>
           </div>
+
+          <div class="insight" id="switchVerdict"></div>
+
         </div>
       </section>
 
@@ -189,23 +198,19 @@
       <section class="card optional">
         <h3>Interest Rate Sensitivity</h3>
 
-        <label>
-          Possible Rate Increase:
-          <strong><span id="rateShockValue">+0.50%</span></strong>
+        <label class="helper">
+          Rate change scenario:
+          <strong><span id="rateShockValue">0.00%</span></strong>
         </label>
 
         <input
           type="range"
           id="rateShock"
-          min="0"
-          max="1.5"
-          step="0.25"
-          value="0.50"
+          min="-1"
+          max="1"
+          step="0.05"
+          value="0"
         />
-
-        <div class="helper">
-          Move the slider to simulate future rate hikes.
-        </div>
 
         <div class="insight">
           Additional interest impact:
@@ -217,38 +222,24 @@
   </section>
 
   <!-- ================= AMORTIZATION ================= -->
-  <section class="card" style="margin-top: 16px;">
-    <h3>Amortization & Loan Breakdown</h3>
+  <section class="card" style="margin-top:16px;">
+    <h3>Amortization (Year-wise)</h3>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="yearly">Year-wise</div>
-      <div class="tab" data-tab="monthly">Monthly</div>
-    </div>
-
-    <div id="amortization-yearly" class="amortization-panel">
-      <table>
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Interest Paid</th>
-            <th>Principal Paid</th>
-            <th>Closing Balance</th>
-          </tr>
-        </thead>
-        <tbody id="amortizationBody"></tbody>
-      </table>
-    </div>
-
-    <div id="amortization-monthly" class="amortization-panel hidden">
-      <p class="helper">
-        Monthly amortization can be large and is intended for advanced analysis.
-      </p>
-      <div id="amortizationMonthly"></div>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Interest Paid</th>
+          <th>Principal Paid</th>
+          <th>Closing Balance</th>
+        </tr>
+      </thead>
+      <tbody id="amortizationBody"></tbody>
+    </table>
   </section>
 
   <!-- ================= INTEREST RATES DISPLAY ================= -->
-  <section class="card optional" style="margin-top: 16px;">
+  <section class="card optional" style="margin-top:16px;">
     <h3>Current Home Loan Interest Rates (India)</h3>
 
     <p class="helper">
@@ -266,7 +257,7 @@
       <tbody id="interestRateTable"></tbody>
     </table>
 
-    <p class="helper" style="margin-top: 6px;">
+    <p class="helper">
       As of <span id="ratesAsOf">—</span>
     </p>
   </section>
