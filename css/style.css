@@ -1,5 +1,5 @@
 /* =========================================================
-   LOANWISE — FINAL STABLE CSS
+   LOANWISE — FINAL PRODUCTION CSS
    ========================================================= */
 
 :root {
@@ -12,14 +12,14 @@
   --line: #253163;
 
   --brand: #ff6a00;
-  --positive: #16a34a;
+  --positive: #22c55e;
   --critical: #ef4444;
 
   --radius: 10px;
   --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ================= Base ================= */
+/* ---------------- Base ---------------- */
 
 * {
   box-sizing: border-box;
@@ -39,27 +39,7 @@ body {
   padding: 16px;
 }
 
-/* ================= Layout ================= */
-
-.main-grid {
-  display: grid;
-  gap: 16px;
-}
-
-@media (min-width: 960px) {
-  .main-grid {
-    grid-template-columns: 1.15fr 0.85fr;
-    align-items: start;
-  }
-}
-
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* ================= Header ================= */
+/* ---------------- Header ---------------- */
 
 .header {
   background: linear-gradient(180deg, #0f1a45, var(--surface));
@@ -67,9 +47,9 @@ body {
 }
 
 .header-inner {
+  min-height: 64px;
   display: flex;
   align-items: center;
-  min-height: 64px;
 }
 
 .logo {
@@ -83,7 +63,7 @@ body {
   color: var(--muted);
 }
 
-/* ================= Hero ================= */
+/* ---------------- Hero ---------------- */
 
 .hero {
   background: var(--surface);
@@ -105,7 +85,27 @@ body {
   line-height: 1.45;
 }
 
-/* ================= Cards ================= */
+/* ---------------- Layout ---------------- */
+
+.main-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 960px) {
+  .main-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------------- Cards ---------------- */
 
 .card {
   background: linear-gradient(180deg, #16255d, var(--card));
@@ -128,7 +128,7 @@ body {
   background: linear-gradient(180deg, #1b2e70, #162250);
 }
 
-/* ================= Forms ================= */
+/* ---------------- Forms ---------------- */
 
 .form-grid {
   display: grid;
@@ -162,17 +162,17 @@ select:focus {
   border-color: var(--brand);
 }
 
-/* ================= Buttons ================= */
+/* ---------------- Buttons ---------------- */
 
 .primary-btn {
   width: 100%;
   margin-top: 12px;
-  padding: 10px;
+  padding: 11px;
   border-radius: var(--radius);
   background: linear-gradient(180deg, #ff7a18, var(--brand));
   border: none;
   color: #111;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
 }
 
@@ -187,14 +187,14 @@ select:focus {
 }
 
 .link-btn {
-  background: transparent;
+  background: none;
   border: none;
   color: var(--brand);
   font-size: 12px;
   cursor: pointer;
 }
 
-/* ================= Results ================= */
+/* ---------------- Results ---------------- */
 
 .result-row {
   display: flex;
@@ -211,28 +211,26 @@ select:focus {
 
 .result-row strong {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .insight {
   margin-top: 8px;
   padding: 10px;
   background: #0b183f;
-  border: 1px dashed var(--line);
+  border-left: 4px solid var(--brand);
   border-radius: 6px;
   font-size: 13px;
   line-height: 1.45;
 }
 
-/* ================= Rent emphasis ================= */
-
+/* Rent insight emphasis */
 #rentVerdict {
-  border-left: 4px solid var(--positive);
+  border-left-color: var(--positive);
   background: #0d2a1a;
 }
 
-/* ================= YES / NO ================= */
-
+/* YES / NO */
 .decision-yes {
   color: var(--positive);
   font-weight: 900;
@@ -243,7 +241,7 @@ select:focus {
   font-weight: 900;
 }
 
-/* ================= Tabs ================= */
+/* ---------------- Tabs ---------------- */
 
 .tabs {
   display: flex;
@@ -267,7 +265,7 @@ select:focus {
   font-weight: 700;
 }
 
-/* ================= Tables ================= */
+/* ---------------- Tables ---------------- */
 
 .table-wrap {
   width: 100%;
@@ -291,11 +289,11 @@ td {
 }
 
 th {
-  text-align: left;
   background: #12275e;
+  text-align: left;
 }
 
-/* ================= Slider ================= */
+/* ---------------- Slider ---------------- */
 
 input[type="range"] {
   -webkit-appearance: none;
@@ -319,7 +317,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-/* ================= Helpers ================= */
+/* ---------------- Helpers ---------------- */
 
 .helper {
   font-size: 11px;
@@ -327,17 +325,17 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 4px;
 }
 
-/* ================= Utility ================= */
+.optional {
+  opacity: 0.95;
+}
+
+/* ---------------- Utility ---------------- */
 
 .hidden {
   display: none !important;
 }
 
-.optional {
-  opacity: 0.96;
-}
-
-/* ================= Footer ================= */
+/* ---------------- Footer ---------------- */
 
 .footer {
   margin-top: 24px;
