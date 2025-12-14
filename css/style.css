@@ -1,5 +1,5 @@
 /* =========================================================
-   LOANWISE — BANK-GRADE DECISION COCKPIT UI (FINAL)
+   LOANWISE — FINAL STABLE CSS
    ========================================================= */
 
 :root {
@@ -162,11 +162,6 @@ select:focus {
   border-color: var(--brand);
 }
 
-input[type="range"] {
-  padding: 0;
-  margin-top: 8px;
-}
-
 /* ================= Buttons ================= */
 
 .primary-btn {
@@ -229,7 +224,8 @@ input[type="range"] {
   line-height: 1.45;
 }
 
-/* Rent optimizer emphasis */
+/* ================= Rent emphasis ================= */
+
 #rentVerdict {
   border-left: 4px solid var(--positive);
   background: #0d2a1a;
@@ -245,6 +241,58 @@ input[type="range"] {
 .decision-no {
   color: var(--critical);
   font-weight: 900;
+}
+
+/* ================= Tabs ================= */
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tab {
+  padding: 6px 12px;
+  background: #0b183f;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.tab.active {
+  background: var(--brand);
+  color: #111;
+  font-weight: 700;
+}
+
+/* ================= Tables ================= */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  min-width: 640px;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+th {
+  text-align: left;
+  background: #12275e;
 }
 
 /* ================= Slider ================= */
@@ -269,25 +317,6 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--ink);
   border: 2px solid var(--brand);
   cursor: pointer;
-}
-
-/* ================= Tables ================= */
-
-table {
-  width: 100%;
-  font-size: 12px;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 6px;
-  border-bottom: 1px solid var(--line);
-}
-
-th {
-  text-align: left;
-  background: #12275e;
 }
 
 /* ================= Helpers ================= */
