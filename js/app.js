@@ -1,319 +1,251 @@
 /* ============================================================
-   LOANWISE — HARDENED ADVISORY ENGINE
-   Bank-grade • Explicit DOM • Robust • Frontend-only
+   LOANWISE — Decision Cockpit Engine (Frontend-only)
+   Supports cockpit HTML + dark KPI CSS
    ============================================================ */
 
 /* =========================
-   DOM REFERENCES (EXPLICIT)
+   DOM REFERENCES
 ========================= */
 
-const principalInput = document.getElementById("principal");
-const principalHelp = document.getElementById("principalHelp");
+const $ = id => document.getElementById(id);
 
-const rateInput = document.getElementById("rate");
+// Inputs
+const principalEl = $("principal");
+const rateEl = $("rate");
+const tenureValEl = $("tenureValue");
+const tenureUnitEl = $("tenureUnit");
 
-const tenureValueInput = document.getElementById("tenureValue");
-const tenureUnitSelect = document.getElementById("tenureUnit");
+const prepayEl = $("prepayment");
+const extraEl = $("extraMonthly");
+const reductionModeEl = $("reductionMode");
 
-const prepaymentInput = document.getElementById("prepayment");
-const prepaymentHelp = document.getElementById("prepaymentHelp");
+const newRateEl = $("newRate");
+const switchCostEl = $("switchCost");
 
-const extraMonthlyInput = document.getElementById("extraMonthly");
-const extraMonthlyHelp = document.getElementById("extraMonthlyHelp");
+// Outputs
+const emiEl = $("emi");
+const optEmiEl = $("optEmi");
+const interestSavedEl = $("interestSaved");
+const loanDurationEl = $("loanDuration");
+const verdictEl = $("verdict");
 
-const reductionModeSelect = document.getElementById("reductionMode");
+const switchDecisionEl = $("switchDecision");
+const switchVerdictEl = $("switchVerdict");
 
-const rentInput = document.getElementById("rentInput");
+const riskImpactEl = $("riskImpact");
 
-const newRateInput = document.getElementById("newRate");
-const switchCostInput = document.getElementById("switchCost");
-const switchCostHelp = document.getElementById("switchCostHelp");
+const amortBodyEl = $("amortizationBody");
 
-const calculateBtn = document.getElementById("calculateBtn");
+// Helpers
+const principalHelp = $("principalHelp");
+const prepayHelp = $("prepaymentHelp");
+const extraHelp = $("extraMonthlyHelp");
+const switchCostHelp = $("switchCostHelp");
 
-const emiEl = document.getElementById("emi");
-const optEmiEl = document.getElementById("optEmi");
-const interestSavedEl = document.getElementById("interestSaved");
-const loanDurationEl = document.getElementById("loanDuration");
-const verdictEl = document.getElementById("verdict");
-const switchVerdictEl = document.getElementById("switchVerdict");
-
-const risk025El = document.getElementById("risk025");
-const risk050El = document.getElementById("risk050");
-const risk100El = document.getElementById("risk100");
-
-const amortizationToggle = document.getElementById("toggleAmortization");
-const amortizationContainer = document.getElementById("amortizationContainer");
-const amortizationBody = document.getElementById("amortizationBody");
+// Live rates
+const rateTableEl = $("interestRateTable");
+const ratesAsOfEl = $("ratesAsOf");
 
 /* =========================
    UTILITIES
 ========================= */
 
-function parseCurrency(val) {
-  return Number(String(val || "").replace(/[^\d]/g, "")) || 0;
-}
+const num = v => Number(String(v || "").replace(/[^\d.]/g, "")) || 0;
 
-function parsePercent(val) {
-  return Number(val) || 0;
-}
+const inr = v =>
+  "₹ " + Math.round(v).toLocaleString("en-IN");
 
-function formatINR(n) {
-  return "₹ " + Math.round(n).toLocaleString("en-IN");
-}
+const words = v => {
+  if (!v) return "";
+  const c = Math.floor(v / 1e7);
+  const l = Math.floor((v % 1e7) / 1e5);
+  return [c && `${c} crore`, l && `${l} lakh`].filter(Boolean).join(" ");
+};
 
-function amountInWords(n) {
-  if (!n) return "";
-  const crore = Math.floor(n / 10000000);
-  const lakh = Math.floor((n % 10000000) / 100000);
-  const parts = [];
-  if (crore) parts.push(crore + " crore");
-  if (lakh) parts.push(lakh + " lakh");
-  return parts.join(" ");
-}
-
-/* =========================
-   INPUT FORMATTERS
-========================= */
-
-function attachIndianFormatter(input, helper) {
+function attachFormatter(input, helper) {
   if (!input || !helper) return;
-
   input.addEventListener("input", () => {
-    const value = parseCurrency(input.value);
-    if (!value) {
-      input.value = "";
-      helper.textContent = "";
-      return;
-    }
-    input.value = value.toLocaleString("en-IN");
-    helper.textContent =
-      formatINR(value) +
-      (amountInWords(value) ? " · " + amountInWords(value) : "");
+    const v = num(input.value);
+    input.value = v ? v.toLocaleString("en-IN") : "";
+    helper.textContent = v ? `${inr(v)} · ${words(v)}` : "";
   });
 }
 
 /* =========================
-   CORE CALCULATIONS
+   FINANCIAL CALCULATIONS
 ========================= */
 
-function calculateEMI(P, annualRate, months) {
-  if (months === 0) return 0;
-
-  if (annualRate === 0) {
-    return P / months;
-  }
-
-  const r = annualRate / 12 / 100;
-  return (P * r * Math.pow(1 + r, months)) /
-         (Math.pow(1 + r, months) - 1);
+function emi(P, r, n) {
+  if (n === 0) return 0;
+  if (r === 0) return P / n;
+  const m = r / 1200;
+  return (P * m * Math.pow(1 + m, n)) /
+         (Math.pow(1 + m, n) - 1);
 }
 
-function amortize(P, annualRate, emi, months, extra = 0) {
-  let balance = P;
-  let totalInterest = 0;
-  const schedule = [];
+function amortize(P, r, e, n, extra = 0) {
+  let bal = P, ti = 0, rows = [];
+  const m = r / 1200;
 
-  const r = annualRate / 12 / 100;
+  for (let i = 1; i <= n && bal > 0; i++) {
+    const int = r === 0 ? 0 : bal * m;
+    let prin = e - int + extra;
+    prin = Math.min(prin, bal);
+    bal -= prin;
+    ti += int;
 
-  for (let m = 1; m <= months && balance > 0; m++) {
-    const interest = annualRate === 0 ? 0 : balance * r;
-    let principal = emi - interest + extra;
-
-    if (principal > balance) principal = balance;
-
-    balance -= principal;
-    totalInterest += interest;
-
-    schedule.push({
-      month: m,
-      interest,
-      principal,
-      balance: Math.max(balance, 0)
-    });
+    rows.push({ i, int, prin, bal });
   }
-
-  return {
-    schedule,
-    totalInterest,
-    months: schedule.length
-  };
+  return { rows, ti, months: rows.length };
 }
 
-function yearlySummary(schedule) {
-  let interest = 0;
-  let principal = 0;
-  let year = 1;
-
-  return schedule.reduce((acc, row, idx) => {
-    interest += row.interest;
-    principal += row.principal;
-
-    if ((idx + 1) % 12 === 0 || row.balance === 0) {
-      acc.push({
-        year,
-        interest,
-        principal,
-        balance: row.balance
-      });
-      interest = 0;
-      principal = 0;
-      year++;
+function yearly(rows) {
+  let y = [], I = 0, P = 0, yr = 1;
+  rows.forEach((r, i) => {
+    I += r.int; P += r.prin;
+    if ((i + 1) % 12 === 0 || r.bal === 0) {
+      y.push({ yr, I, P, bal: r.bal });
+      I = P = 0; yr++;
     }
-    return acc;
-  }, []);
+  });
+  return y;
 }
 
 /* =========================
    MAIN ANALYSIS
 ========================= */
 
-function analyzeLoan() {
+function analyze() {
+  const P = num(principalEl.value);
+  const r = num(rateEl.value);
+  const t = num(tenureValEl.value) *
+    (tenureUnitEl.value === "years" ? 12 : 1);
 
-  const principal = parseCurrency(principalInput.value);
-  const rate = parsePercent(rateInput.value);
-
-  const tenureMonths =
-    tenureUnitSelect.value === "years"
-      ? Number(tenureValueInput.value) * 12
-      : Number(tenureValueInput.value);
-
-  if (!principal || !rate || !tenureMonths) {
+  if (!P || !r || !t) {
     alert("Please enter loan amount, interest rate and tenure.");
     return;
   }
 
-  const lumpSum = parseCurrency(prepaymentInput.value);
-  const extraMonthly = parseCurrency(extraMonthlyInput.value);
-  const reductionMode = reductionModeSelect.value;
-  const rent = parseCurrency(rentInput.value);
-  const newRate = parsePercent(newRateInput.value);
-  const switchCost = parseCurrency(switchCostInput.value);
+  const lump = num(prepayEl.value);
+  const extra = num(extraEl.value);
 
-  /* ---------- BASE ---------- */
+  /* Base */
+  const baseEmi = emi(P, r, t);
+  const base = amortize(P, r, baseEmi, t);
 
-  const baseEmi = calculateEMI(principal, rate, tenureMonths);
-  const base = amortize(principal, rate, baseEmi, tenureMonths);
+  /* Optimized */
+  const optP = Math.max(P - lump, 0);
+  const optEmi = emi(optP, r, t);
+  const opt = amortize(optP, r, optEmi, t, extra);
 
-  /* ---------- OPTIMIZED ---------- */
-
-  let optPrincipal = Math.max(principal - lumpSum, 0);
-  let optEmi = calculateEMI(optPrincipal, rate, tenureMonths);
-
-  const optimized = amortize(
-    optPrincipal,
-    rate,
-    optEmi,
-    tenureMonths,
-    extraMonthly
-  );
-
-  /* ---------- SUMMARY OUTPUT ---------- */
-
-  emiEl.textContent = formatINR(baseEmi);
-  optEmiEl.textContent = formatINR(optEmi);
-  interestSavedEl.textContent =
-    formatINR(base.totalInterest - optimized.totalInterest);
-
+  /* Summary */
+  emiEl.textContent = inr(baseEmi);
+  optEmiEl.textContent = inr(optEmi);
+  interestSavedEl.textContent = inr(base.ti - opt.ti);
   loanDurationEl.textContent =
-    Math.floor(optimized.months / 12) +
-    " years " +
-    (optimized.months % 12) +
-    " months";
+    `${Math.floor(opt.months / 12)}y ${opt.months % 12}m`;
 
-  /* ---------- DECISION TEXT ---------- */
+  verdictEl.textContent =
+    base.ti > opt.ti
+      ? `Prepaying now saves ${inr(base.ti - opt.ti)} in interest and closes the loan faster.`
+      : `No meaningful savings from prepayment at current inputs.`;
 
-  let message =
-    "Based on your inputs, reducing principal through prepayments lowers your total interest by " +
-    formatINR(base.totalInterest - optimized.totalInterest) +
-    " and shortens the loan duration.";
+  /* Bank switching */
+  const nr = num(newRateEl.value);
+  const cost = num(switchCostEl.value);
 
-  if (!lumpSum && !extraMonthly) {
-    message =
-      "With no prepayments, the loan runs its full tenure with total interest of " +
-      formatINR(base.totalInterest) +
-      ". Any early principal reduction meaningfully reduces this.";
-  }
+  if (nr && nr < r) {
+    const alt = amortize(P, nr, emi(P, nr, t), t);
+    const gain = base.ti - alt.ti - cost;
 
-  if (rent) {
-    const coverage = Math.round((rent / optEmi) * 100);
-    message +=
-      " Your rental income covers approximately " +
-      coverage +
-      "% of the EMI.";
-  }
-
-  verdictEl.textContent = message;
-
-  /* ---------- BANK SWITCH ---------- */
-
-  if (newRate && newRate < rate) {
-    const altEmi = calculateEMI(principal, newRate, tenureMonths);
-    const alt = amortize(principal, newRate, altEmi, tenureMonths);
-
-    const netGain =
-      base.totalInterest - alt.totalInterest - switchCost;
-
-    switchVerdictEl.textContent =
-      netGain > 0
-        ? "Switching banks can save approximately " +
-          formatINR(netGain) +
-          " over the remaining loan period."
-        : "After accounting for switching costs, changing banks does not provide a financial benefit.";
+    if (gain > 0) {
+      switchDecisionEl.textContent = "YES";
+      switchDecisionEl.className = "decision-yes";
+      switchVerdictEl.textContent =
+        `Switching saves approximately ${inr(gain)} after costs.`;
+    } else {
+      switchDecisionEl.textContent = "NO";
+      switchDecisionEl.className = "decision-no";
+      switchVerdictEl.textContent =
+        "Switching does not recover the switching cost.";
+    }
   } else {
-    switchVerdictEl.textContent =
-      "Bank switching analysis not applied.";
+    switchDecisionEl.textContent = "—";
+    switchVerdictEl.textContent = "Enter an alternate interest rate.";
   }
 
-  /* ---------- RATE RISK ---------- */
+  /* Interest sensitivity */
+  const shock = Number(
+    document.querySelector("input[name='rateShock']:checked")?.value || 0
+  );
+  if (shock) {
+    const shocked = amortize(P, r + shock, emi(P, r + shock, t), t);
+    riskImpactEl.textContent = inr(shocked.ti - base.ti);
+  }
 
-  const risk = shock =>
-    amortize(
-      principal,
-      rate + shock,
-      calculateEMI(principal, rate + shock, tenureMonths),
-      tenureMonths
-    ).totalInterest - base.totalInterest;
-
-  risk025El.textContent = formatINR(risk(0.25));
-  risk050El.textContent = formatINR(risk(0.5));
-  risk100El.textContent = formatINR(risk(1));
-
-  /* ---------- AMORTIZATION ---------- */
-
-  const rows = yearlySummary(optimized.schedule)
-    .map(y => `
-      <tr>
-        <td>${y.year}</td>
-        <td>${formatINR(y.interest)}</td>
-        <td>${formatINR(y.principal)}</td>
-        <td>${formatINR(y.balance)}</td>
-      </tr>
-    `)
-    .join("");
-
-  amortizationBody.innerHTML = rows;
+  /* Amortization (yearly) */
+  amortBodyEl.innerHTML = yearly(opt.rows)
+    .map(y =>
+      `<tr>
+        <td>${y.yr}</td>
+        <td>${inr(y.I)}</td>
+        <td>${inr(y.P)}</td>
+        <td>${inr(y.bal)}</td>
+      </tr>`
+    ).join("");
 }
 
 /* =========================
-   EVENTS
+   TABS
 ========================= */
 
-calculateBtn.addEventListener("click", analyzeLoan);
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".amortization-panel")
+      .forEach(p => p.classList.add("hidden"));
 
-amortizationToggle.addEventListener("click", () => {
-  amortizationContainer.classList.toggle("hidden");
-  amortizationToggle.setAttribute(
-    "aria-expanded",
-    !amortizationContainer.classList.contains("hidden")
-  );
+    tab.classList.add("active");
+    document.getElementById(`amortization-${tab.dataset.tab}`)
+      .classList.remove("hidden");
+  });
 });
 
 /* =========================
-   INIT FORMATTERS
+   LIVE INTEREST RATES (FETCH)
 ========================= */
 
-attachIndianFormatter(principalInput, principalHelp);
-attachIndianFormatter(prepaymentInput, prepaymentHelp);
-attachIndianFormatter(extraMonthlyInput, extraMonthlyHelp);
-attachIndianFormatter(switchCostInput, switchCostHelp);
+async function loadRates() {
+  try {
+    const res = await fetch(
+      "https://example.com/home-loan-rates.json"
+    );
+    const data = await res.json();
+
+    rateTableEl.innerHTML = data.banks.map(b =>
+      `<tr>
+        <td>${b.name}</td>
+        <td>${b.rate}%</td>
+        <td>${b.charges || "—"}</td>
+      </tr>`
+    ).join("");
+
+    ratesAsOfEl.textContent = data.asOf;
+  } catch {
+    rateTableEl.innerHTML =
+      `<tr><td colspan="3">Unable to load rate data.</td></tr>`;
+  }
+}
+
+/* =========================
+   INIT
+========================= */
+
+$("calculateBtn").addEventListener("click", analyze);
+
+attachFormatter(principalEl, principalHelp);
+attachFormatter(prepayEl, prepayHelp);
+attachFormatter(extraEl, extraHelp);
+attachFormatter(switchCostEl, switchCostHelp);
+
+loadRates();
