@@ -1,16 +1,18 @@
 /* =========================================================
-   LOANWISE — FINAL FRONTEND ENGINE
+   LOANWISE — FINAL DECISION ENGINE (FRONTEND ONLY)
    ========================================================= */
 
-const $ = id => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
-/* ---------- Utilities ---------- */
+/* ----------------- Utilities ----------------- */
 
-const num = v => Number(String(v || "").replace(/[^\d.]/g, "")) || 0;
-const inr = v => "₹ " + Math.round(v).toLocaleString("en-IN");
+const num = (v) =>
+  Number(String(v || "").replace(/[^\d.]/g, "")) || 0;
 
-/* ---------- Indian formatting helpers ---------- */
+const inr = (v) =>
+  "₹ " + Math.round(v).toLocaleString("en-IN");
 
+/* Indian number formatting + helper text */
 function attachFormatter(input, helper) {
   if (!input || !helper) return;
   input.addEventListener("input", () => {
@@ -20,135 +22,232 @@ function attachFormatter(input, helper) {
   });
 }
 
-/* ---------- Finance core ---------- */
+/* ----------------- Finance Core ----------------- */
 
-function emi(P, r, n) {
-  if (r === 0) return P / n;
-  const m = r / 1200;
-  return (P * m * Math.pow(1 + m, n)) /
-         (Math.pow(1 + m, n) - 1);
+function calculateEMI(P, annualRate, months) {
+  if (annualRate === 0) return P / months;
+  const r = annualRate / 1200;
+  return (P * r * Math.pow(1 + r, months)) /
+         (Math.pow(1 + r, months) - 1);
 }
 
-function amortize(P, r, e, n) {
-  let bal = P, ti = 0, rows = [];
-  const m = r / 1200;
+function amortize(P, annualRate, emi, months) {
+  let balance = P;
+  let totalInterest = 0;
+  const rows = [];
+  const r = annualRate / 1200;
 
-  for (let i = 1; i <= n && bal > 0; i++) {
-    const interest = r ? bal * m : 0;
-    const principal = Math.min(e - interest, bal);
-    bal -= principal;
-    ti += interest;
+  for (let m = 1; m <= months && balance > 0; m++) {
+    const interest = annualRate ? balance * r : 0;
+    const principal = Math.min(emi - interest, balance);
+    balance -= principal;
+    totalInterest += interest;
 
     rows.push({
-      year: Math.ceil(i / 12),
+      year: Math.ceil(m / 12),
       interest,
       principal,
-      balance: bal
+      balance
     });
   }
-  return { rows, ti, months: rows.length };
+
+  return { rows, totalInterest, months: rows.length };
 }
 
-/* ---------- Main analysis ---------- */
+/* ----------------- Main Loan Analysis ----------------- */
 
-function analyze() {
+function analyzeLoan() {
   const P = num($("principal").value);
-  const r = num($("rate").value);
-  const tenureVal = num($("tenureValue").value);
+  const rate = num($("rate").value);
+  const tenureValue = num($("tenureValue").value);
   const tenureMonths =
-    tenureVal * ($("tenureUnit").value === "years" ? 12 : 1);
+    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
 
-  if (!P || !r || !tenureMonths) return;
+  if (!P || !rate || !tenureMonths) return;
 
-  const baseEmi = emi(P, r, tenureMonths);
-  const base = amortize(P, r, baseEmi, tenureMonths);
+  const emi = calculateEMI(P, rate, tenureMonths);
+  const base = amortize(P, rate, emi, tenureMonths);
 
-  $("emi").textContent = inr(baseEmi);
-  $("optEmi").textContent = inr(baseEmi);
+  $("emi").textContent = inr(emi);
+  $("optEmi").textContent = inr(emi);
   $("interestSaved").textContent = inr(0);
   $("loanDuration").textContent =
     `${Math.floor(base.months / 12)}y ${base.months % 12}m`;
 
   $("verdict").textContent =
-    "This is your current loan position without any optimization.";
+    "This reflects your current loan position without any optimization.";
 
-  /* ---------- Interest sensitivity (slider) ---------- */
+  /* Reveal decision summary */
+  $("decisionSummary").classList.remove("hidden");
 
+  /* ---------- Interest Sensitivity ---------- */
+  updateRateSensitivity(base, P, rate, tenureMonths);
+
+  /* ---------- Amortization (Year-wise) ---------- */
+  renderAmortization(base.rows);
+
+  /* ---------- Interest rates table refresh ---------- */
+  loadInterestRates();
+}
+
+/* ----------------- Interest Rate Sensitivity ----------------- */
+
+function updateRateSensitivity(base, P, rate, months) {
   const shock = Number($("rateShock").value || 0);
-  $("rateShockValue").textContent = `+${shock.toFixed(2)}%`;
+  $("rateShockValue").textContent =
+    `${shock > 0 ? "+" : ""}${shock.toFixed(2)}%`;
 
-  if (shock > 0) {
-    const shocked = amortize(
-      P,
-      r + shock,
-      emi(P, r + shock, tenureMonths),
-      tenureMonths
-    );
-    $("riskImpact").textContent = inr(shocked.ti - base.ti);
-  } else {
+  if (shock === 0) {
     $("riskImpact").textContent = inr(0);
+    return;
   }
 
-  /* ---------- Amortization (year-wise) ---------- */
+  const newRate = rate + shock;
+  if (newRate <= 0) {
+    $("riskImpact").textContent = "—";
+    return;
+  }
 
+  const shocked = amortize(
+    P,
+    newRate,
+    calculateEMI(P, newRate, months),
+    months
+  );
+
+  $("riskImpact").textContent =
+    inr(shocked.totalInterest - base.totalInterest);
+}
+
+/* ----------------- Amortization Renderer ----------------- */
+
+function renderAmortization(rows) {
   const yearly = {};
-  base.rows.forEach(r => {
-    if (!yearly[r.year]) yearly[r.year] = { i: 0, p: 0, b: r.balance };
+
+  rows.forEach((r) => {
+    if (!yearly[r.year]) {
+      yearly[r.year] = { i: 0, p: 0, b: r.balance };
+    }
     yearly[r.year].i += r.interest;
     yearly[r.year].p += r.principal;
     yearly[r.year].b = r.balance;
   });
 
   $("amortizationBody").innerHTML = Object.keys(yearly)
-    .map(y => `
+    .map((y) => `
       <tr>
         <td>${y}</td>
         <td>${inr(yearly[y].i)}</td>
         <td>${inr(yearly[y].p)}</td>
         <td>${inr(yearly[y].b)}</td>
       </tr>
-    `).join("");
+    `)
+    .join("");
 }
 
-/* ---------- Tabs ---------- */
+/* ----------------- Bank Switching ----------------- */
 
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".amortization-panel")
-      .forEach(p => p.classList.add("hidden"));
+function analyzeSwitching() {
+  const P = num($("principal").value);
+  const rate = num($("rate").value);
+  const newRate = num($("newRate").value);
+  const switchCost = num($("switchCost").value);
+  const tenureValue = num($("tenureValue").value);
+  const tenureMonths =
+    tenureValue * ($("tenureUnit").value === "years" ? 12 : 1);
 
-    tab.classList.add("active");
-    document.getElementById(`amortization-${tab.dataset.tab}`)
-      .classList.remove("hidden");
-  });
-});
+  if (!P || !rate || !newRate || !tenureMonths) return;
 
-/* ---------- Interest rates (fallback display) ---------- */
+  const current = amortize(
+    P,
+    rate,
+    calculateEMI(P, rate, tenureMonths),
+    tenureMonths
+  );
 
-function loadRates() {
+  const switched = amortize(
+    P,
+    newRate,
+    calculateEMI(P, newRate, tenureMonths),
+    tenureMonths
+  );
+
+  const netSaving =
+    current.totalInterest - switched.totalInterest - switchCost;
+
+  if (netSaving > 0) {
+    $("switchDecision").textContent = "YES";
+    $("switchDecision").className = "decision-yes";
+    $("switchVerdict").textContent =
+      `Switching saves approximately ${inr(netSaving)} even after costs.`;
+  } else {
+    $("switchDecision").textContent = "NO";
+    $("switchDecision").className = "decision-no";
+    $("switchVerdict").textContent =
+      "Switching does not recover the switching cost within the remaining tenure.";
+  }
+}
+
+/* ----------------- Interest Rate Table (Fallback Data) ----------------- */
+
+function getLoanSlabId(amount) {
+  if (amount <= 3000000) return "upto30";
+  if (amount <= 7500000) return "30to75";
+  return "above75";
+}
+
+function loadInterestRates() {
   if (!window.HOME_LOAN_RATES) return;
 
-  $("interestRateTable").innerHTML =
-    HOME_LOAN_RATES.lenders.map(b =>
-      `<tr>
-        <td>${b.name}</td>
-        <td>${b.rate}</td>
-        <td>${b.charges || "—"}</td>
-      </tr>`
-    ).join("");
+  const principal = num($("principal").value);
+  const slabId = getLoanSlabId(principal || 0);
 
-  $("ratesAsOf").textContent = HOME_LOAN_RATES.asOf;
+  let html = "";
+
+  HOME_LOAN_RATES.lenders.forEach((group) => {
+    html += `
+      <tr>
+        <td colspan="3" style="font-weight:700;padding-top:10px;">
+          ${group.category}
+        </td>
+      </tr>
+    `;
+
+    group.banks.forEach((bank) => {
+      html += `
+        <tr>
+          <td>${bank.name}</td>
+          <td>${bank.rates[slabId] || "—"}</td>
+          <td>—</td>
+        </tr>
+      `;
+    });
+  });
+
+  $("interestRateTable").innerHTML = html;
+  $("ratesAsOf").textContent = HOME_LOAN_RATES.asOf || "—";
 }
 
-/* ---------- Init ---------- */
+/* ----------------- Init & Events ----------------- */
 
-$("calculateBtn").addEventListener("click", analyze);
-$("rateShock").addEventListener("input", analyze);
+$("calculateBtn").addEventListener("click", analyzeLoan);
+$("rateShock").addEventListener("input", () => {
+  if (!$("decisionSummary").classList.contains("hidden")) {
+    analyzeLoan();
+  }
+});
 
+$("toggleSwitching").addEventListener("click", () => {
+  $("switchingPanel").classList.toggle("hidden");
+});
+
+$("analyzeSwitching").addEventListener("click", analyzeSwitching);
+
+/* Format currency inputs */
 attachFormatter($("principal"), $("principalHelp"));
 attachFormatter($("prepayment"), $("prepaymentHelp"));
 attachFormatter($("extraMonthly"), $("extraMonthlyHelp"));
 attachFormatter($("switchCost"), $("switchCostHelp"));
 
-loadRates();
+/* Initial rate table load */
+document.addEventListener("DOMContentLoaded", loadInterestRates);
