@@ -32,8 +32,8 @@
     <h2>Home Loan Decision Cockpit</h2>
     <p>
       Enter your current loan details once.
-      Analyze prepayment impact, interest risk, and bank switching —
-      only when you choose to.
+      Analyze prepayment impact, rent alignment,
+      interest risk, and bank switching — only when you choose to.
     </p>
   </section>
 
@@ -43,7 +43,7 @@
     <!-- ================= LEFT: INPUTS ================= -->
     <section>
 
-      <!-- LOAN SNAPSHOT (ALWAYS VISIBLE) -->
+      <!-- LOAN SNAPSHOT -->
       <section class="card">
         <h3>Loan Snapshot</h3>
 
@@ -127,7 +127,7 @@
     <!-- ================= RIGHT: OUTPUTS ================= -->
     <section class="right-panel">
 
-      <!-- DECISION SUMMARY (HIDDEN UNTIL ANALYSIS) -->
+      <!-- DECISION SUMMARY -->
       <section class="card results hidden" id="decisionSummary">
         <h3>Decision Summary</h3>
 
@@ -154,11 +154,64 @@
         <div class="insight" id="verdict"></div>
       </section>
 
-      <!-- BANK SWITCHING (COLLAPSED BY DEFAULT) -->
+      <!-- RENT VS EMI OPTIMIZER (NEW FEATURE) -->
+      <section class="card">
+        <h3>
+          Rent vs EMI Optimizer
+          <button id="toggleRentOptimizer" class="link-btn">
+            Analyze
+          </button>
+        </h3>
+
+        <div id="rentOptimizerPanel" class="hidden">
+
+          <p class="helper">
+            Useful if this property is rented or expected to be rented.
+            See how much extra you need to pay so rent covers EMI.
+          </p>
+
+          <div class="form-grid two">
+            <div>
+              <label>
+                Monthly Rent
+                <input type="text" id="monthlyRent" inputmode="numeric" />
+              </label>
+              <div class="helper" id="monthlyRentHelp"></div>
+            </div>
+
+            <div>
+              <label>
+                Goal
+                <select id="rentGoal">
+                  <option value="cover-emi">
+                    Make rent fully cover EMI
+                  </option>
+                  <option value="match-emi">
+                    Bring EMI close to rent
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <button id="analyzeRent" class="secondary-btn">
+            Optimize for Rent
+          </button>
+
+          <div class="insight" id="rentVerdict">
+            Rent-based recommendation will appear here.
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BANK SWITCHING -->
       <section class="card">
         <h3>
           Bank Switching Analysis
-          <button id="toggleSwitching" class="link-btn">Analyze</button>
+          <button id="toggleSwitching" class="link-btn">
+            Analyze
+          </button>
         </h3>
 
         <div id="switchingPanel" class="hidden">
@@ -194,7 +247,7 @@
         </div>
       </section>
 
-      <!-- INTEREST RATE SENSITIVITY (SLIDER) -->
+      <!-- INTEREST RATE SENSITIVITY -->
       <section class="card optional">
         <h3>Interest Rate Sensitivity</h3>
 
@@ -238,12 +291,12 @@
     </table>
   </section>
 
-  <!-- ================= INTEREST RATES DISPLAY ================= -->
+  <!-- ================= INTEREST RATES ================= -->
   <section class="card optional" style="margin-top:16px;">
     <h3>Current Home Loan Interest Rates (India)</h3>
 
     <p class="helper">
-      Indicative rates for comparison only. Actual rates depend on credit profile.
+      Indicative rates for comparison only.
     </p>
 
     <table>
