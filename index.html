@@ -3,211 +3,215 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loanwise – Close Your Home Loan Smarter</title>
+  <title>Loanwise – Home Loan Decision Engine</title>
 
-  <!-- Meta for trust -->
-  <meta name="description" content="Loanwise helps Indian home loan borrowers understand EMI, reduce interest, and close loans faster with smart planning." />
+  <meta name="description"
+    content="Loanwise helps Indian home loan borrowers decide prepayment, EMI vs tenure, bank switching, risk impact, and loan closure strategy." />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=final" />
 </head>
 
 <body>
 
-  <!-- ================= HEADER ================= -->
-  <header class="header">
-    <div class="container header-inner">
-      <div class="brand">
-        <h1 class="logo">Loanwise</h1>
-        <p class="tagline">A smarter way to close your home loan</p>
-      </div>
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <div class="container header-inner">
+    <div>
+      <h1 class="logo">Loanwise</h1>
+      <p class="tagline">Make the right home loan decisions</p>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- ================= MAIN ================= -->
-  <main class="container">
+<!-- ================= MAIN ================= -->
+<main class="container">
 
-    <!-- ================= INTRO ================= -->
-    <section class="intro">
-      <h2>Home Loan Optimizer</h2>
-      <p>
-        Built for Indian home loan borrowers.  
-        Understand your EMI, reduce interest burden, and plan the fastest way
-        to close your loan using prepayments and smarter decisions.
+  <!-- INTRO -->
+  <section class="intro">
+    <h2>Home Loan Optimizer</h2>
+    <p>
+      A consumer-grade decision engine for Indian home loan borrowers.
+      Compare scenarios, reduce risk, and decide whether switching banks actually makes sense.
+    </p>
+  </section>
+
+  <!-- ================= GRID ================= -->
+  <section class="main-grid">
+
+    <!-- ================= LEFT PANEL ================= -->
+    <section class="card calculator">
+
+      <h3>Loan Details</h3>
+
+      <div class="field">
+        <label for="principal">Outstanding Loan Amount</label>
+        <input type="text" id="principal" inputmode="numeric" placeholder="1,00,00,000" />
+        <div class="helper" id="principalHelp"></div>
+      </div>
+
+      <div class="field">
+        <label for="rate">Current Interest Rate (%)</label>
+        <input type="number" id="rate" step="0.01" placeholder="8.5" />
+      </div>
+
+      <div class="field">
+        <label>Remaining Tenure</label>
+        <div class="tenure-input">
+          <input type="number" id="tenureValue" placeholder="20" />
+          <select id="tenureUnit">
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+          </select>
+        </div>
+      </div>
+
+      <hr />
+
+      <!-- ================= OPTIMIZATION ================= -->
+      <h4>Optimization</h4>
+
+      <div class="field">
+        <label for="prepayment">Lump-sum Prepayment</label>
+        <input type="text" id="prepayment" inputmode="numeric" placeholder="5,00,000" />
+        <div class="helper" id="prepaymentHelp"></div>
+      </div>
+
+      <div class="field">
+        <label for="extraMonthly">Extra Monthly Payment</label>
+        <input type="text" id="extraMonthly" inputmode="numeric" placeholder="10,000" />
+        <div class="helper" id="extraMonthlyHelp"></div>
+      </div>
+
+      <div class="field">
+        <label for="reductionMode">Prepayment Strategy</label>
+        <select id="reductionMode">
+          <option value="tenure">Reduce Tenure (close faster)</option>
+          <option value="emi">Reduce EMI (improve cash flow)</option>
+        </select>
+      </div>
+
+      <hr />
+
+      <!-- ================= RENTAL CASH FLOW ================= -->
+      <h4>Rental Cash Flow (Optional)</h4>
+
+      <div class="field">
+        <label for="rentInput">Monthly Rent Received</label>
+        <input type="text" id="rentInput" inputmode="numeric" placeholder="25,000" />
+      </div>
+
+      <hr />
+
+      <!-- ================= BANK SWITCHING ================= -->
+      <h4>Bank Switching / Balance Transfer</h4>
+
+      <div class="field">
+        <label for="newRate">New Bank Interest Rate (%)</label>
+        <input type="number" id="newRate" step="0.01" placeholder="7.5" />
+      </div>
+
+      <div class="field">
+        <label for="switchCost">One-time Switching Cost</label>
+        <input type="text" id="switchCost" inputmode="numeric" placeholder="50,000" />
+        <div class="helper" id="switchCostHelp"></div>
+      </div>
+
+      <hr />
+
+      <!-- ================= STRESS TEST ================= -->
+      <h4>Interest Rate Stress Test</h4>
+
+      <div class="field">
+        <label for="rateShock">Simulate Rate Increase</label>
+        <select id="rateShock">
+          <option value="0">No change</option>
+          <option value="0.25">+0.25%</option>
+          <option value="0.5">+0.50%</option>
+          <option value="1">+1.00%</option>
+        </select>
+      </div>
+
+      <button id="calculateBtn" class="primary-btn">
+        Analyze & Compare
+      </button>
+
+      <p class="privacy-note">
+        All calculations happen locally in your browser.
+        No data is stored or transmitted.
       </p>
+
     </section>
 
-    <!-- ================= GRID LAYOUT ================= -->
-    <section class="main-grid">
+    <!-- ================= RIGHT PANEL ================= -->
+    <section class="right-panel">
 
-      <!-- ================= LEFT: CALCULATOR ================= -->
-      <section class="card calculator">
+      <!-- DECISION SUMMARY -->
+      <section class="card results">
+        <h3>Decision Summary</h3>
 
-        <h3 class="card-title">Loan Details</h3>
-
-        <!-- Loan Amount -->
-        <div class="field">
-          <label for="principal">Outstanding Loan Amount</label>
-          <input
-            type="text"
-            id="principal"
-            inputmode="numeric"
-            placeholder="e.g. 1,00,00,000"
-          />
-          <div class="helper" id="principalHelp"></div>
+        <div class="result-row">
+          <span>Current EMI</span>
+          <strong id="emi">—</strong>
         </div>
 
-        <!-- Interest Rate -->
-        <div class="field">
-          <label for="rate">Interest Rate (per annum)</label>
-          <input
-            type="number"
-            step="0.01"
-            id="rate"
-            placeholder="e.g. 8.5"
-          />
+        <div class="result-row">
+          <span>Optimized EMI</span>
+          <strong id="optEmi">—</strong>
         </div>
 
-        <!-- Tenure -->
-        <div class="field">
-          <label>Remaining Tenure</label>
-          <div class="tenure-input">
-            <input
-              type="number"
-              id="tenureValue"
-              placeholder="e.g. 20"
-            />
-            <select id="tenureUnit">
-              <option value="years">Years</option>
-              <option value="months">Months</option>
-            </select>
-          </div>
+        <div class="result-row">
+          <span>Interest Saved</span>
+          <strong id="interestSaved">—</strong>
         </div>
 
-        <!-- Lump Sum -->
-        <div class="field">
-          <label for="prepayment">One-time Prepayment (Optional)</label>
-          <input
-            type="text"
-            id="prepayment"
-            inputmode="numeric"
-            placeholder="e.g. 5,00,000"
-          />
-          <div class="helper" id="prepaymentHelp"></div>
+        <div class="result-row">
+          <span>Loan Closes In</span>
+          <strong id="loanDuration">—</strong>
         </div>
 
-        <!-- Extra Monthly -->
-        <div class="field">
-          <label for="extraMonthly">Extra Monthly Payment (Optional)</label>
-          <input
-            type="text"
-            id="extraMonthly"
-            inputmode="numeric"
-            placeholder="e.g. 10,000"
-          />
-          <div class="helper" id="extraMonthlyHelp"></div>
-        </div>
+        <div class="insight" id="verdict"></div>
+      </section>
 
-        <button id="calculateBtn" class="primary-btn">
-          Calculate & Optimize
+      <!-- BANK SWITCHING RESULT -->
+      <section class="card results">
+        <h3>Bank Switching Verdict</h3>
+        <p id="switchVerdict">—</p>
+      </section>
+
+      <!-- AMORTIZATION -->
+      <section class="amortization-section">
+        <button class="link-button" id="toggleAmortization">
+          View year-wise amortization
         </button>
 
-        <p class="privacy-note">
-          Your data stays in your browser. Nothing is stored or shared.
-        </p>
-
+        <div class="card amortization hidden" id="amortizationContainer">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Interest Paid</th>
+                <th>Principal Paid</th>
+                <th>Closing Balance</th>
+              </tr>
+            </thead>
+            <tbody id="amortizationBody"></tbody>
+          </table>
+        </div>
       </section>
-      <!-- ================= RIGHT: SUMMARY & INSIGHTS ================= -->
-      <section class="right-panel">
 
-        <!-- SUMMARY CARD -->
-        <section class="card results">
-          <h3 class="card-title">Loan Summary</h3>
+    </section>
 
-          <div class="result-row">
-            <span>Monthly EMI</span>
-            <strong id="emi">—</strong>
-          </div>
+  </section>
+</main>
 
-          <div class="result-row">
-            <span>Total Interest Payable</span>
-            <strong id="totalInterest">—</strong>
-          </div>
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <p>
+    Loanwise is an educational decision-support tool.
+    Calculations are indicative and may differ from actual bank terms.
+  </p>
+</footer>
 
-          <div class="result-row">
-            <span>Total Amount Paid</span>
-            <strong id="totalPayment">—</strong>
-          </div>
-
-          <div class="result-row">
-            <span>Loan Closes In</span>
-            <strong id="loanDuration">—</strong>
-          </div>
-
-          <p class="summary-note">
-            Tip: Even small monthly prepayments can save lakhs in interest
-            over the loan duration.
-          </p>
-        </section>
-
-        <!-- AMORTIZATION TOGGLE -->
-        <section class="amortization-section">
-          <button
-            class="link-button"
-            id="toggleAmortization"
-            type="button"
-          >
-            View detailed amortization schedule
-          </button>
-
-          <!-- AMORTIZATION TABLE -->
-          <div
-            class="card amortization hidden"
-            id="amortizationContainer"
-          >
-            <h3 class="card-title">Amortization Schedule</h3>
-
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Month</th>
-                    <th>EMI</th>
-                    <th>Principal</th>
-                    <th>Interest</th>
-                    <th>Balance</th>
-                  </tr>
-                </thead>
-                <tbody id="amortizationBody">
-                  <!-- JS injects rows -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-      </section> <!-- END RIGHT PANEL -->
-
-    </section> <!-- END MAIN GRID -->
-
-  </main>
-
-  <!-- ================= FOOTER ================= -->
-  <footer class="footer">
-    <div class="container footer-inner">
-      <p>
-        Loanwise is built for Indian home loan borrowers to make informed,
-        stress-free financial decisions.
-      </p>
-      <p class="footer-note">
-        This tool is for educational purposes only and does not constitute
-        financial advice.
-      </p>
-    </div>
-  </footer>
-
-  <!-- ================= SCRIPT ================= -->
-  <script src="./js/app.js?v=3"></script>
-
+<script src="js/app.js?v=final"></script>
 </body>
 </html>
