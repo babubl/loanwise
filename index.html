@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Loanwise — Home Loan Decision Support</title>
+  <title>Loanwise — Home Loan Decision Cockpit</title>
 
   <meta name="description"
-        content="Loanwise helps Indian home loan borrowers make informed decisions on prepayments, interest savings, and loan closure." />
+        content="Loanwise is a decision-support cockpit for Indian home loan borrowers to reduce interest and close loans faster." />
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -19,7 +19,7 @@
   <div class="container header-inner">
     <div>
       <h1 class="logo">Loanwise</h1>
-      <p class="tagline">Clear decisions for long-term home loans</p>
+      <div class="tagline">Make one clear decision about your home loan</div>
     </div>
   </div>
 </header>
@@ -27,157 +27,110 @@
 <!-- ================= MAIN ================= -->
 <main class="container">
 
-  <!-- ================= HERO ================= -->
+  <!-- ================= HERO (COMPACT & CLEAR) ================= -->
   <section class="hero">
-    <h2>Home Loan Decision Support Tool</h2>
+    <h2>Home Loan Decision Cockpit</h2>
     <p>
-      This tool helps you understand how prepayments, interest rates,
-      and loan structure affect the total cost of your home loan.
-      All calculations run locally in your browser.
+      Enter your current loan details once.
+      Loanwise shows the most effective action to reduce interest,
+      shorten tenure, or decide whether switching banks makes sense.
     </p>
   </section>
 
-  <!-- ================= CORE LAYOUT ================= -->
+  <!-- ================= MAIN GRID ================= -->
   <section class="main-grid">
 
-    <!-- ================= INPUTS ================= -->
+    <!-- ================= LEFT: INPUTS ================= -->
     <section>
 
-      <!-- LOAN DETAILS -->
+      <!-- ========== CORE LOAN DETAILS ========== -->
       <section class="card">
-        <h3>Loan Details</h3>
+        <h3>Loan Snapshot</h3>
 
-        <div class="field">
-          <label>
-            Current Outstanding Principal
-            <input type="text"
-                   id="principal"
-                   inputmode="numeric"
-                   placeholder="e.g. 75,00,000" />
-          </label>
-          <div class="helper" id="principalHelp"></div>
-        </div>
+        <div class="form-grid two">
 
-        <div class="field">
-          <label>
-            Current Interest Rate (% per annum)
-            <input type="number"
-                   id="rate"
-                   step="0.01"
-                   placeholder="e.g. 8.50" />
-          </label>
-        </div>
-
-        <fieldset class="field">
-          <legend>Remaining Loan Tenure</legend>
-
-          <div class="tenure-input">
+          <div>
             <label>
-              Duration
-              <input type="number"
-                     id="tenureValue"
-                     placeholder="e.g. 15" />
+              Outstanding Principal (from last statement)
+              <input type="text" id="principal" inputmode="numeric" />
             </label>
+            <div class="helper" id="principalHelp"></div>
+          </div>
 
+          <div>
             <label>
-              Unit
+              Current Interest Rate (%)
+              <input type="number" id="rate" step="0.01" />
+            </label>
+          </div>
+
+          <div>
+            <label>
+              Remaining Tenure
+              <input type="number" id="tenureValue" />
+            </label>
+          </div>
+
+          <div>
+            <label>
+              Tenure Unit
               <select id="tenureUnit">
                 <option value="years">Years</option>
                 <option value="months">Months</option>
               </select>
             </label>
           </div>
-        </fieldset>
+
+        </div>
       </section>
 
-      <!-- PREPAYMENT / OPTIMIZATION -->
+      <!-- ========== PREPAYMENT / OPTIMIZATION ========== -->
       <section class="card">
-        <h3>Prepayment & Optimization</h3>
+        <h3>Prepayment Strategy</h3>
 
-        <div class="field">
-          <label>
-            One-time Prepayment Amount
-            <input type="text"
-                   id="prepayment"
-                   inputmode="numeric"
-                   placeholder="e.g. 3,00,000" />
-          </label>
-          <div class="helper" id="prepaymentHelp"></div>
+        <div class="form-grid two">
+
+          <div>
+            <label>
+              One-time Prepayment Amount
+              <input type="text" id="prepayment" inputmode="numeric" />
+            </label>
+            <div class="helper" id="prepaymentHelp"></div>
+          </div>
+
+          <div>
+            <label>
+              Extra Monthly Payment
+              <input type="text" id="extraMonthly" inputmode="numeric" />
+            </label>
+            <div class="helper" id="extraMonthlyHelp"></div>
+          </div>
+
         </div>
 
-        <div class="field">
-          <label>
-            Additional Monthly Payment
-            <input type="text"
-                   id="extraMonthly"
-                   inputmode="numeric"
-                   placeholder="e.g. 10,000" />
-          </label>
-          <div class="helper" id="extraMonthlyHelp"></div>
-        </div>
-
-        <div class="field">
-          <label>
-            Apply Prepayment To
-            <select id="reductionMode">
-              <option value="tenure">Reduce loan tenure</option>
-              <option value="emi">Reduce monthly EMI</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <!-- CASH FLOW -->
-      <section class="card">
-        <h3>Cash Flow (if applicable)</h3>
-
-        <div class="field">
-          <label>
-            Monthly Rental Income
-            <input type="text"
-                   id="rentInput"
-                   inputmode="numeric"
-                   placeholder="e.g. 25,000" />
-          </label>
+        <div class="form-grid two">
+          <div>
+            <label>
+              Apply Prepayment To
+              <select id="reductionMode">
+                <option value="tenure">Reduce tenure (recommended)</option>
+                <option value="emi">Reduce EMI</option>
+              </select>
+            </label>
+          </div>
         </div>
       </section>
-
-      <!-- BANK SWITCHING -->
-      <section class="card">
-        <h3>Bank Switching Assessment</h3>
-
-        <div class="field">
-          <label>
-            Alternate Bank Interest Rate (%)
-            <input type="number"
-                   id="newRate"
-                   step="0.01"
-                   placeholder="e.g. 7.75" />
-          </label>
-        </div>
-
-        <div class="field">
-          <label>
-            One-time Switching Cost
-            <input type="text"
-                   id="switchCost"
-                   inputmode="numeric"
-                   placeholder="e.g. 50,000" />
-          </label>
-          <div class="helper" id="switchCostHelp"></div>
-        </div>
-      </section>
-
+      <!-- ========== PRIMARY ACTION ========== -->
       <button id="calculateBtn" class="primary-btn">
         Analyze Loan Decision
       </button>
 
-    </section>
+    </section> <!-- END LEFT INPUTS -->
 
-    <!-- ================= RESULTS ================= -->
+    <!-- ================= RIGHT: DECISION COCKPIT ================= -->
     <section class="right-panel">
 
-      <!-- DECISION SUMMARY -->
+      <!-- ========== DECISION SUMMARY (FLASHY) ========== -->
       <section class="card results">
         <h3>Decision Summary</h3>
 
@@ -192,62 +145,103 @@
         </div>
 
         <div class="result-row">
-          <span>Total Interest Saved</span>
+          <span>Interest Saved</span>
           <strong id="interestSaved">—</strong>
         </div>
 
         <div class="result-row">
-          <span>Loan Closes In</span>
+          <span>Loan Closure Time</span>
           <strong id="loanDuration">—</strong>
         </div>
 
-        <div class="insight" id="verdict"></div>
+        <!-- Advisor-style narrative -->
+        <div class="insight" id="verdict">
+          Enter your loan details and click “Analyze Loan Decision”
+          to see the most effective strategy.
+        </div>
       </section>
 
-      <!-- BANK SWITCH VERDICT -->
+      <!-- ========== BANK SWITCHING (YES / NO) ========== -->
       <section class="card">
         <h3>Bank Switching Outcome</h3>
-        <p id="switchVerdict">
-          Bank switching analysis will be shown here when applicable.
-        </p>
+
+        <div class="result-row">
+          <span>Should you switch banks?</span>
+          <strong id="switchDecision" class="decision-no">—</strong>
+        </div>
+
+        <div class="insight" id="switchVerdict">
+          Switching analysis will appear here once you enter an
+          alternate interest rate and switching cost.
+        </div>
+
+        <!-- Optional inputs inline -->
+        <div class="form-grid two optional" style="margin-top: 10px;">
+          <div>
+            <label>
+              Alternate Bank Interest Rate (%)
+              <input type="number" id="newRate" step="0.01" />
+            </label>
+          </div>
+
+          <div>
+            <label>
+              One-time Switching Cost
+              <input type="text" id="switchCost" inputmode="numeric" />
+            </label>
+            <div class="helper" id="switchCostHelp"></div>
+          </div>
+        </div>
       </section>
 
-      <!-- INTEREST RATE RISK -->
-      <section class="card">
+      <!-- ========== INTEREST RATE SENSITIVITY (OPTIONAL) ========== -->
+      <section class="card optional">
         <h3>Interest Rate Sensitivity</h3>
 
-        <table>
-          <tbody>
-            <tr>
-              <td>If rates increase by 0.25%</td>
-              <td id="risk025">—</td>
-            </tr>
-            <tr>
-              <td>If rates increase by 0.50%</td>
-              <td id="risk050">—</td>
-            </tr>
-            <tr>
-              <td>If rates increase by 1.00%</td>
-              <td id="risk100">—</td>
-            </tr>
-          </tbody>
-        </table>
+        <p class="helper">
+          Select a possible rate increase to see how much extra
+          interest you may pay if rates rise.
+        </p>
+
+        <div class="form-grid three" style="margin-top: 8px;">
+          <label>
+            <input type="radio" name="rateShock" value="0.25" checked />
+            +0.25%
+          </label>
+
+          <label>
+            <input type="radio" name="rateShock" value="0.50" />
+            +0.50%
+          </label>
+
+          <label>
+            <input type="radio" name="rateShock" value="1.00" />
+            +1.00%
+          </label>
+        </div>
+
+        <div class="insight" style="margin-top: 10px;">
+          Additional interest impact:
+          <strong id="riskImpact">—</strong>
+        </div>
       </section>
 
-    </section>
-  </section>
+    </section> <!-- END RIGHT PANEL -->
 
-  <!-- ================= AMORTIZATION ================= -->
-  <section class="amortization-section">
-    <button class="link-button"
-            id="toggleAmortization"
-            aria-expanded="false"
-            aria-controls="amortizationContainer">
-      View year-wise amortization schedule
-    </button>
+  </section> <!-- END MAIN GRID -->
+  <!-- ================= AMORTIZATION (TAB-BASED) ================= -->
+  <section class="card" style="margin-top: 16px;">
 
-    <div class="card hidden" id="amortizationContainer">
-      <h3>Year-wise Amortization</h3>
+    <h3>Amortization & Loan Breakdown</h3>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="yearly">Year-wise</div>
+      <div class="tab" data-tab="monthly">Monthly</div>
+    </div>
+
+    <!-- Year-wise (default) -->
+    <div id="amortization-yearly" class="amortization-panel">
       <table>
         <thead>
           <tr>
@@ -257,9 +251,71 @@
             <th>Closing Balance</th>
           </tr>
         </thead>
-        <tbody id="amortizationBody"></tbody>
+        <tbody id="amortizationBody">
+          <!-- Filled by JS -->
+        </tbody>
       </table>
     </div>
+
+    <!-- Monthly (hidden by default) -->
+    <div id="amortization-monthly" class="amortization-panel hidden">
+      <p class="helper">
+        Monthly amortization can be large. This view is useful for
+        advanced analysis.
+      </p>
+      <div id="amortizationMonthly">
+        <!-- Optional: monthly rows via JS -->
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= ADVISOR EDUCATION ================= -->
+  <section class="card advisor" style="margin-top: 16px;">
+    <strong>Advisor Insight</strong>
+    <p>
+      From a long-term wealth perspective, reducing high-interest
+      debt like home loans provides a guaranteed, risk-free return
+      equivalent to your loan’s interest rate.
+    </p>
+    <p>
+      Strategic prepayments made early in the loan lifecycle have
+      a disproportionate impact on total interest saved.
+      Switching banks should be considered only if the net savings
+      clearly exceed the switching costs within a short period.
+    </p>
+  </section>
+
+  <!-- ================= LIVE INTEREST RATE DATA ================= -->
+  <section class="card optional" style="margin-top: 16px;">
+    <h3>Current Home Loan Interest Rates (India)</h3>
+
+    <p class="helper">
+      Latest indicative rates fetched from public sources.
+      Rates may vary based on credit profile and lender.
+    </p>
+
+    <!-- Filled by JS fetch -->
+    <table>
+      <thead>
+        <tr>
+          <th>Bank / NBFC</th>
+          <th>Interest Rate</th>
+          <th>Processing Charges</th>
+        </tr>
+      </thead>
+      <tbody id="interestRateTable">
+        <tr>
+          <td colspan="3" class="helper">
+            Loading latest interest rate data…
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="helper" style="margin-top: 6px;">
+      As of <span id="ratesAsOf">—</span>
+    </p>
   </section>
 
 </main>
@@ -267,12 +323,17 @@
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
   <p>
-    Loanwise is an informational decision-support tool.
-    Calculations are indicative and do not constitute binding financial advice.
-    Please refer to your loan statement or lender for exact figures.
+    Loanwise is a decision-support tool for informational purposes only.
+    Calculations are indicative and do not constitute financial advice
+    or a lending offer.
+  </p>
+  <p>
+    Always verify figures with your bank or loan statement.
   </p>
 </footer>
 
+<!-- ================= SCRIPT ================= -->
 <script src="js/app.js"></script>
+
 </body>
 </html>
