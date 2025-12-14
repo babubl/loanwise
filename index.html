@@ -31,9 +31,9 @@
   <section class="hero">
     <h2>Home Loan Decision Cockpit</h2>
     <p>
-      Enter your current loan details once.
-      Evaluate EMI, rent alignment, interest risk,
-      and bank switching with clarity.
+      Enter your loan details once.
+      Optimize prepayments, align rent with EMI,
+      and decide faster with clarity.
     </p>
   </section>
 
@@ -82,7 +82,7 @@
         </div>
       </section>
 
-      <!-- PREPAYMENT -->
+      <!-- PREPAYMENT STRATEGY -->
       <section class="card">
         <h3>Prepayment Strategy</h3>
 
@@ -113,7 +113,7 @@
         </label>
       </section>
 
-      <!-- CTA -->
+      <!-- PRIMARY CTA -->
       <button id="calculateBtn" class="primary-btn">
         Analyze My Loan
       </button>
@@ -154,10 +154,17 @@
       <section class="card">
         <h3>
           Rent vs EMI Optimizer
-          <button id="toggleRentOptimizer" class="link-btn">Analyze</button>
+          <button id="toggleRentOptimizer" class="link-btn">
+            Analyze
+          </button>
         </h3>
 
         <div id="rentOptimizerPanel" class="hidden">
+
+          <p class="helper">
+            Useful if the property is rented or expected to be rented.
+          </p>
+
           <div class="form-grid two">
             <div>
               <label>
@@ -171,8 +178,12 @@
               <label>
                 Goal
                 <select id="rentGoal">
-                  <option value="cover-emi">Rent fully covers EMI</option>
-                  <option value="match-emi">Bring EMI close to rent</option>
+                  <option value="cover-emi">
+                    Make rent fully cover EMI
+                  </option>
+                  <option value="match-emi">
+                    Bring EMI close to rent
+                  </option>
                 </select>
               </label>
             </div>
@@ -190,10 +201,13 @@
       <section class="card">
         <h3>
           Bank Switching Analysis
-          <button id="toggleSwitching" class="link-btn">Analyze</button>
+          <button id="toggleSwitching" class="link-btn">
+            Analyze
+          </button>
         </h3>
 
         <div id="switchingPanel" class="hidden">
+
           <div class="form-grid two">
             <div>
               <label>
@@ -224,7 +238,7 @@
         </div>
       </section>
 
-      <!-- INTEREST SENSITIVITY -->
+      <!-- INTEREST RATE SENSITIVITY -->
       <section class="card optional">
         <h3>Interest Rate Sensitivity</h3>
 
@@ -233,12 +247,14 @@
           <strong><span id="rateShockValue">0.00%</span></strong>
         </label>
 
-        <input type="range"
-               id="rateShock"
-               min="-1"
-               max="1"
-               step="0.05"
-               value="0" />
+        <input
+          type="range"
+          id="rateShock"
+          min="-1"
+          max="1"
+          step="0.05"
+          value="0"
+        />
 
         <div class="insight">
           Additional interest impact:
@@ -258,7 +274,6 @@
       <button class="tab" data-view="monthly">Monthly</button>
     </div>
 
-    <!-- YEARLY -->
     <div id="amortization-yearly">
       <table>
         <thead>
@@ -273,14 +288,12 @@
       </table>
     </div>
 
-    <!-- MONTHLY -->
     <div id="amortization-monthly" class="hidden">
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Month</th>
-              <th>EMI</th>
               <th>Interest</th>
               <th>Principal</th>
               <th>Balance</th>
