@@ -1,147 +1,173 @@
-/* =========================================================
-   HOME LOAN PROCESSING FEES (INDIA)
-   Source reference: Consolidated data from various bank/NBFC websites and financial portals.
-   NOTE: Fees are subject to change and should be confirmed directly with the lender.
-   GST (18%) is applicable on most processing fees and is NOT included in the values below.
-   ========================================================= */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loanwise — Home Loan Decision Cockpit</title>
 
-window.HOME_LOAN_FEES = {
-  source: "Consolidated Industry Data",
-  asOf: "December 2025", // Reflects the latest search results date
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
 
-  lenders: [
-    {
-      category: "Public Sector Banks",
-      banks: [
-        {
-          name: "State Bank of India (SBI)",
-          fee_details: "Up to 0.35% of loan amount. Minimum ₹3,000 / Maximum ₹12,000. Often offers 50% concession or 100% waiver in special schemes.",
-          fee_range_percent: "0.0% – 0.35%"
-        },
-        {
-          name: "Union Bank of India",
-          fee_details: "Up to 0.50% of the loan amount. Maximum ₹15,000. Waived in certain schemes/periods.",
-          fee_range_percent: "0.0% – 0.50%"
-        },
-        {
-          name: "Bank of Baroda",
-          fee_details: "Up to 0.50% of the loan amount. Minimum ₹1,500.",
-          fee_range_percent: "0.0% – 0.50%"
-        },
-        {
-          name: "Bank of India",
-          fee_details: "Up to 0.25% of the loan amount. Often runs waiver schemes.",
-          fee_range_percent: "0.0% – 0.25%"
-        },
-        {
-          name: "Central Bank of India",
-          fee_details: "Up to 0.50% of the loan amount. Minimum ₹2,500 / Maximum ₹20,000.",
-          fee_range_percent: "0.0% – 0.50%"
-        },
-        {
-          name: "Bank of Maharashtra",
-          fee_details: "Generally NIL / Waived on Home Loans.",
-          fee_range_percent: "0.0%"
-        },
-        {
-          name: "Indian Overseas Bank",
-          fee_details: "Up to 0.50% of the loan amount. Max. ₹25,000. Often NIL.",
-          fee_range_percent: "0.0% – 0.50%"
-        },
-        {
-          name: "Punjab National Bank (PNB)",
-          fee_details: "Approximately 0.35% of loan amount, minimum ₹2,500. Often offers waivers.",
-          fee_range_percent: "0.0% – 0.35%"
-        }
-      ]
-    },
+<body>
 
-    {
-      category: "Private Sector Banks",
-      banks: [
-        {
-          name: "HDFC Bank (HFC/Bank)",
-          fee_details: "Up to 0.50% of loan amount or ₹3,000 (whichever is higher). Can go up to 1.50% for self-employed non-professionals.",
-          fee_range_percent: "0.50% – 1.50%"
-        },
-        {
-          name: "ICICI Bank",
-          fee_details: "0.50% to 2.00% of the loan amount or ₹3,000 (whichever is higher).",
-          fee_range_percent: "0.50% – 2.00%"
-        },
-        {
-          name: "Kotak Mahindra Bank",
-          fee_details: "Up to 2% of loan amount. Upfront fee of ₹5,000 is non-refundable.",
-          fee_range_percent: "0.50% – 2.00%"
-        },
-        {
-          name: "Axis Bank",
-          fee_details: "Up to 1% of the loan amount, subject to a minimum of ₹10,000.",
-          fee_range_percent: "Up to 1.0%"
-        },
-        {
-          name: "Karur Vysya Bank",
-          fee_details: "Starts from ₹2,500 (Min. amount).",
-          fee_range_percent: "Varies"
-        },
-        {
-          name: "South Indian Bank",
-          fee_details: "Approx. 0.50% of loan amount + GST, minimum ₹10,000.",
-          fee_range_percent: "Approx. 0.50%"
-        },
-        {
-          name: "Bandhan Bank",
-          fee_details: "Varies significantly based on scheme.",
-          fee_range_percent: "Varies"
-        }
-      ]
-    },
+<header class="header">
+  <div class="container header-inner">
+    <div>
+      <h1 class="logo">Loanwise</h1>
+      <div class="tagline">One clear decision for your home loan</div>
+    </div>
+  </div>
+</header>
 
-    {
-      category: "Housing Finance Companies (HFCs)",
-      banks: [
-        {
-          name: "LIC Housing Finance",
-          fee_details: "Up to 0.50% of loan amount. Minimum ₹10,000.",
-          fee_range_percent: "Up to 0.50%"
-        },
-        {
-          name: "ICICI Home Finance",
-          fee_details: "0.50% to 3.00% of loan amount. Upfront Login Fees may apply.",
-          fee_range_percent: "0.50% – 3.00%"
-        },
-        {
-          name: "PNB Housing Finance",
-          fee_details: "Up to 1% of the loan amount.",
-          fee_range_percent: "Up to 1.0%"
-        },
-        {
-          name: "Repco Home Finance",
-          fee_details: "Around 1% of loan amount.",
-          fee_range_percent: "Approx. 1.0%"
-        },
-        {
-          name: "Aditya Birla Capital",
-          fee_details: "Up to 1% of the loan amount.",
-          fee_range_percent: "Up to 1.0%"
-        }
-      ]
-    },
+<main class="container">
 
-    {
-      category: "Foreign Banks",
-      banks: [
-        {
-          name: "HSBC India",
-          fee_details: "Around 1% of loan amount or minimum ₹10,000.",
-          fee_range_percent: "Approx. 1.0%"
-        },
-        {
-          name: "Standard Chartered Bank",
-          fee_details: "Around 0.50% of loan amount.",
-          fee_range_percent: "Approx. 0.50%"
-        }
-      ]
-    }
-  ]
-};
+  <section class="hero">
+    <h2>Home Loan Decision Cockpit</h2>
+    <p>Enter your loan details once and take the smartest action.</p>
+  </section>
+
+  <section class="main-grid">
+
+    <!-- INPUTS -->
+    <section>
+
+      <section class="card">
+        <h3>Loan Snapshot</h3>
+
+        <div class="form-grid two">
+          <div>
+            <label>Outstanding Principal (₹)
+              <input type="text" id="principal" inputmode="numeric">
+            </label>
+            <div class="helper" id="principalHelp"></div>
+          </div>
+
+          <div>
+            <label>Interest Rate (%)
+              <input type="number" id="rate" step="0.01">
+            </label>
+          </div>
+
+          <div>
+            <label>Remaining Tenure
+              <input type="number" id="tenureValue">
+            </label>
+          </div>
+
+          <div>
+            <label>Tenure Unit
+              <select id="tenureUnit">
+                <option value="years">Years</option>
+                <option value="months">Months</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Prepayment Strategy</h3>
+
+        <div class="form-grid two">
+          <div>
+            <label>One-time Prepayment (₹)
+              <input type="text" id="prepayment" inputmode="numeric">
+            </label>
+            <div class="helper" id="prepaymentHelp"></div>
+          </div>
+
+          <div>
+            <label>Extra Monthly Payment (₹)
+              <input type="text" id="extraMonthly" inputmode="numeric">
+            </label>
+            <div class="helper" id="extraMonthlyHelp"></div>
+          </div>
+        </div>
+
+        <label>Apply Prepayment To
+          <select id="reductionMode">
+            <option value="tenure">Reduce tenure</option>
+            <option value="emi">Reduce EMI</option>
+          </select>
+        </label>
+      </section>
+
+      <button type="button" id="calculateBtn" class="primary-btn">
+        Analyze My Loan
+      </button>
+
+    </section>
+
+    <!-- RESULTS -->
+    <section class="right-panel">
+
+      <section class="card results hidden" id="decisionSummary">
+        <h3>Decision Summary</h3>
+
+        <div class="result-row"><span>Current EMI</span><strong id="emi">—</strong></div>
+        <div class="result-row"><span>Optimized EMI</span><strong id="optEmi">—</strong></div>
+        <div class="result-row"><span>Interest Saved</span><strong id="interestSaved">—</strong></div>
+        <div class="result-row"><span>Loan Closure</span><strong id="loanDuration">—</strong></div>
+
+        <div class="insight" id="verdict"></div>
+      </section>
+
+      <section class="card">
+        <h3>Interest Rate Sensitivity</h3>
+
+        <label class="helper">
+          Rate change: <strong><span id="rateShockValue">+0.00%</span></strong>
+        </label>
+
+        <input type="range" id="rateShock" min="-1" max="1" step="0.05" value="0">
+
+        <div class="insight">
+          Additional interest impact:
+          <strong id="riskImpact">—</strong>
+        </div>
+      </section>
+
+    </section>
+
+  </section>
+
+  <!-- AMORTIZATION -->
+  <section class="card" style="margin-top:16px;">
+    <h3>Amortization Schedule</h3>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-view="yearly">Year-wise</button>
+      <button type="button" class="tab" data-view="monthly">Monthly</button>
+    </div>
+
+    <div id="amortization-yearly">
+      <table>
+        <thead>
+          <tr><th>Year</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
+        </thead>
+        <tbody id="amortizationBody"></tbody>
+      </table>
+    </div>
+
+    <div id="amortization-monthly" class="hidden">
+      <table>
+        <thead>
+          <tr><th>Month</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
+        </thead>
+        <tbody id="amortizationMonthly"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Loanwise is an informational tool. Verify all numbers with your bank.</p>
+</footer>
+
+<script src="./js/homeLoanFeesData.js"></script>
+<script src="./js/homeLoanRatesData.js"></script>
+<script src="./js/app.js"></script>
+
+</body>
+</html>
