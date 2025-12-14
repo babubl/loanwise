@@ -1,12 +1,18 @@
-/* =====================================================
-   Loanwise — World Class Fintech UI (v3)
-   Calm • Premium • Trustworthy • Indian-first
-   ===================================================== */
+/* ============================================================
+   LOANWISE – WORLD CLASS FINTECH UI
+   Bank-grade • Calm • Trustworthy • Consumer-first
+   ============================================================ */
 
-/* ---------- Base Reset ---------- */
+/* -------------------------
+   Global Reset
+-------------------------- */
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
@@ -14,23 +20,29 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
-  background-color: #fdfefe; /* warm off-white */
+  /* Warm neutral background (NOT grey, NOT blue) */
+  background-color: #fafafa;
+
   color: #0f172a;
   line-height: 1.6;
 }
 
-/* ---------- Layout ---------- */
+/* -------------------------
+   Layout Container
+-------------------------- */
 
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 2rem 1.25rem;
+  padding: 2rem 1.5rem;
 }
 
-/* ---------- Header ---------- */
+/* -------------------------
+   Header
+-------------------------- */
 
 .header {
-  background: #ffffff;
+  background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -40,29 +52,26 @@ body {
   min-height: 72px;
 }
 
-.brand {
-  display: flex;
-  flex-direction: column;
-}
-
 .logo {
   margin: 0;
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .tagline {
-  margin: 0.2rem 0 0;
+  margin-top: 0.25rem;
   font-size: 0.9rem;
   color: #64748b;
 }
 
-/* ---------- Intro ---------- */
+/* -------------------------
+   Intro
+-------------------------- */
 
 .intro {
   max-width: 720px;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .intro h2 {
@@ -76,49 +85,53 @@ body {
   font-size: 1rem;
 }
 
-/* ---------- Main Grid ---------- */
+/* -------------------------
+   Main Grid
+-------------------------- */
 
 .main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
+  gap: 2.75rem;
   margin-top: 2.5rem;
 }
 
-/* ---------- Cards ---------- */
+/* -------------------------
+   Card System
+-------------------------- */
 
 .card {
-  background: #ffffff;
+  background-color: #ffffff;
   border-radius: 16px;
   padding: 2rem;
+
+  /* Realistic depth – not floating, not flat */
   box-shadow:
-    0 12px 30px rgba(15, 23, 42, 0.06),
+    0 10px 28px rgba(15, 23, 42, 0.06),
     0 1px 0 rgba(15, 23, 42, 0.04);
 }
 
-.card-title {
+.card h3 {
   margin-top: 0;
   margin-bottom: 1.25rem;
   font-size: 1.25rem;
   font-weight: 600;
 }
 
-/* ---------- Calculator ---------- */
-
-.calculator {
-  max-width: 520px;
-}
+/* -------------------------
+   Form Fields
+-------------------------- */
 
 .field {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .field label {
   display: block;
   font-size: 0.9rem;
   font-weight: 500;
-  margin-bottom: 0.35rem;
   color: #334155;
+  margin-bottom: 0.35rem;
 }
 
 .field input,
@@ -126,26 +139,34 @@ body {
   width: 100%;
   padding: 0.7rem 0.75rem;
   font-size: 1rem;
+
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  background: #ffffff;
-  transition: border 0.15s ease, box-shadow 0.15s ease;
+  background-color: #ffffff;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .field input:focus,
 .field select:focus {
   outline: none;
   border-color: #2563eb;
+
+  /* Soft focus ring – bank-safe */
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+/* Helper text */
+
 .helper {
   margin-top: 0.25rem;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #64748b;
 }
 
-/* Tenure input */
+/* Tenure group */
 
 .tenure-input {
   display: grid;
@@ -153,27 +174,48 @@ body {
   gap: 0.75rem;
 }
 
-/* ---------- Primary Button ---------- */
+/* -------------------------
+   Section Separators
+-------------------------- */
+
+hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.75rem 0;
+}
+
+/* -------------------------
+   Primary Button
+-------------------------- */
 
 .primary-btn {
   width: 100%;
   margin-top: 0.75rem;
   padding: 0.9rem;
+
   font-size: 1rem;
   font-weight: 500;
+
   border-radius: 12px;
   border: none;
   cursor: pointer;
 
-  background: #2563eb;
+  /* Conservative bank blue */
+  background-color: #2563eb;
   color: #ffffff;
 
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.3);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
 }
 
 /* Privacy note */
@@ -184,7 +226,9 @@ body {
   color: #64748b;
 }
 
-/* ---------- Results ---------- */
+/* -------------------------
+   Right Panel
+-------------------------- */
 
 .right-panel {
   display: flex;
@@ -192,37 +236,43 @@ body {
   gap: 2rem;
 }
 
-.results {
-  max-width: 520px;
-}
+/* -------------------------
+   Results
+-------------------------- */
 
-.result-row {
+.results .result-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 0.55rem 0;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.result-row:last-child {
+.results .result-row:last-child {
   border-bottom: none;
 }
 
-.result-row span {
+.results span {
   color: #475569;
 }
 
-.result-row strong {
+.results strong {
   font-weight: 600;
 }
 
-.summary-note {
+/* Insight text */
+
+.insight {
   margin-top: 1rem;
-  font-size: 0.85rem;
-  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-/* ---------- Amortization ---------- */
+/* -------------------------
+   Amortization
+-------------------------- */
 
 .amortization-section {
   margin-top: 0.5rem;
@@ -245,13 +295,7 @@ body {
   display: none;
 }
 
-.amortization {
-  margin-top: 1.25rem;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
+/* Table */
 
 table {
   width: 100%;
@@ -266,7 +310,7 @@ td {
 }
 
 th {
-  background: #f8fafc;
+  background-color: #f8fafc;
   font-weight: 600;
   text-align: center;
 }
@@ -280,32 +324,35 @@ th:first-child {
   text-align: center;
 }
 
-/* ---------- Footer ---------- */
+/* -------------------------
+   Footer
+-------------------------- */
 
 .footer {
   margin-top: 4rem;
   padding: 2.5rem 1.25rem;
   text-align: center;
+
   font-size: 0.85rem;
   color: #64748b;
+
   border-top: 1px solid #e5e7eb;
 }
 
-.footer-note {
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
-  color: #94a3b8;
-}
-
-/* ---------- Responsive ---------- */
+/* -------------------------
+   Responsive
+-------------------------- */
 
 @media (max-width: 900px) {
   .main-grid {
     grid-template-columns: 1fr;
   }
 
-  .calculator,
-  .results {
-    max-width: 100%;
+  .card {
+    padding: 1.5rem;
+  }
+
+  .tenure-input {
+    grid-template-columns: 1fr;
   }
 }
