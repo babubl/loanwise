@@ -1,6 +1,11 @@
-/* ---------------------------------
-   Global Reset & Base Styles
----------------------------------- */
+/* =====================================================
+   DESIGN PHILOSOPHY
+   Calm • Spacious • Premium • Trust-building
+   ===================================================== */
+
+/* -------------------------
+   CSS Reset & Base
+-------------------------- */
 
 * {
   box-sizing: border-box;
@@ -8,144 +13,227 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: #f8fafc;
-  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  color: #0f172a;
   line-height: 1.6;
 }
 
-/* ---------------------------------
-   Layout Utilities
----------------------------------- */
+/* -------------------------
+   Layout
+-------------------------- */
 
 .container {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: auto;
-  padding: 1.5rem;
+  padding: 2rem 1.25rem;
 }
 
-/* ---------------------------------
+/* -------------------------
    Header
----------------------------------- */
+-------------------------- */
 
 .header {
-  background-color: #0f172a;
-  color: white;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  min-height: 72px;
 }
 
 .logo {
   margin: 0;
   font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .tagline {
-  margin: 0.25rem 0 0;
+  margin: 0.15rem 0 0;
   font-size: 0.9rem;
-  color: #cbd5f5;
+  color: #64748b;
 }
 
-/* ---------------------------------
+/* -------------------------
    Intro
----------------------------------- */
+-------------------------- */
 
 .intro {
-  margin-bottom: 2rem;
+  margin-top: 1.5rem;
+  max-width: 720px;
 }
 
 .intro h2 {
+  font-size: 2rem;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
-/* ---------------------------------
-   Calculator Section
----------------------------------- */
+.intro p {
+  color: #475569;
+  font-size: 1rem;
+}
+
+/* -------------------------
+   Card System
+-------------------------- */
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.06),
+    0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+/* -------------------------
+   Calculator Inputs
+-------------------------- */
 
 .calculator {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  max-width: 500px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  max-width: 520px;
 }
 
 .field {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .field label {
   display: block;
   font-size: 0.9rem;
-  color: #374151;
-  margin-bottom: 0.3rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: #334155;
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
-  padding: 0.55rem;
+  padding: 0.65rem 0.75rem;
   font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: none;
   border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* ---------------------------------
-   Buttons
----------------------------------- */
+/* Helper text */
+
+.helper {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Tenure group */
+
+.tenure-group .tenure-input {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 0.75rem;
+}
+
+/* -------------------------
+   Primary Button
+-------------------------- */
 
 button {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #2563eb;
-  color: white;
-  border: none;
+  margin-top: 0.75rem;
+  padding: 0.85rem;
   font-size: 1rem;
-  border-radius: 8px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 button:hover {
-  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
-/* ---------------------------------
+/* -------------------------
    Results
----------------------------------- */
+-------------------------- */
 
 .results {
-  margin-top: 2rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  max-width: 500px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  max-width: 520px;
 }
 
 .results h3 {
   margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
 }
 
-.results p {
+.result-row {
   display: flex;
   justify-content: space-between;
-  margin: 0.5rem 0;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-/* ---------------------------------
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.result-row span {
+  color: #475569;
+}
+
+.result-row strong {
+  font-weight: 600;
+}
+
+/* -------------------------
+   Amortization Toggle
+-------------------------- */
+
+.amortization-section {
+  margin-top: 2rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.95rem;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------
    Amortization Table
----------------------------------- */
+-------------------------- */
 
 .amortization {
-  margin-top: 3rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  margin-top: 1.5rem;
+}
+
+.hidden {
+  display: none;
 }
 
 .table-wrapper {
@@ -155,20 +243,19 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
   font-size: 0.9rem;
 }
 
 th,
 td {
-  border: 1px solid #e5e7eb;
-  padding: 0.55rem;
+  padding: 0.6rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th {
-  background-color: #f1f5f9;
-  text-align: center;
+  background: #f1f5f9;
   font-weight: 600;
+  text-align: center;
 }
 
 td {
@@ -180,25 +267,32 @@ th:first-child {
   text-align: center;
 }
 
-/* ---------------------------------
+/* -------------------------
    Footer
----------------------------------- */
+-------------------------- */
 
 .footer {
   margin-top: 4rem;
-  padding: 1.5rem;
+  padding: 2rem 1rem;
   text-align: center;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #64748b;
 }
 
-/* ---------------------------------
+/* -------------------------
    Responsive
----------------------------------- */
+-------------------------- */
 
 @media (max-width: 768px) {
-  .calculator,
-  .results {
-    max-width: 100%;
+  .intro h2 {
+    font-size: 1.6rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .tenure-group .tenure-input {
+    grid-template-columns: 1fr;
   }
 }
